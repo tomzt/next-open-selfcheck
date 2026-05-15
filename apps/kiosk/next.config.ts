@@ -5,11 +5,10 @@ import createNextIntlPlugin from 'next-intl/plugin'
 const withNextIntl = createNextIntlPlugin('./i18n.ts')
 
 const nextConfig: NextConfig = {
-  // Kiosk mode — no need for image optimization from external sources
+  output: 'standalone',
   images: {
     localPatterns: [{ pathname: '/uploads/**' }],
   },
-  // Security headers for kiosk deployment
   async headers() {
     return [
       {

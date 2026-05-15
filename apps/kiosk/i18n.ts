@@ -5,17 +5,19 @@ export const locales = ['th', 'en'] as const
 export type Locale = (typeof locales)[number]
 
 // Default locale — overridden by NEXT_PUBLIC_DEFAULT_LANGUAGE env
-export const defaultLocale: Locale = 
+export const defaultLocale: Locale =
   (process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE as Locale) ?? 'th'
 
-export default getRequestConfig(async ({ locale }) => {
+export default getRequestConfig(async ({ requestLocale }) => {
+  let locale = await requestLocale
+
   // Validate locale — fall back to default if unknown
-  const validLocale = locales.includes(locale as Locale) 
-    ? locale 
-    : defaultLocale
+  if (!locale || !locales.includes(locale as Locale)) {
+    locale = defaultLocale
+  }
 
   return {
-    locale: validLocale,
-    messages: (await import(`../messages/${validLocale}.json`)).default,
+    locale,
+    messages: (await import(`./messages/${locale}.json`)).default,
   }
 })

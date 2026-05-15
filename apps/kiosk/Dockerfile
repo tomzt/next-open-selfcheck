@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # next-open-selfcheck — Kiosk Dockerfile
-# Multi-stage build for smaller production image
 
 FROM node:20-alpine AS base
 WORKDIR /app
@@ -9,15 +8,15 @@ WORKDIR /app
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # ── Builder ───────────────────────────────────────────────────
 FROM base AS builder
+RUN apk add --no-cache libc6-compat
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 COPY . .
 
-# Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
@@ -30,7 +29,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built assets
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
