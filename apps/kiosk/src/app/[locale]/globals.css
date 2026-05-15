@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Variables — theme tokens ─────────────────────────── */
+:root {
+  --color-primary: 37 99 235;           /* blue-600 — overridden by Setup Wizard */
+  --color-primary-foreground: 255 255 255;
+
+  /* Light theme (default) */
+  --background: 255 255 255;
+  --foreground: 15 23 42;
+  --muted: 241 245 249;
+  --muted-foreground: 100 116 139;
+  --border: 226 232 240;
+}
+
+/* Dark theme */
+[data-theme="dark"],
+.dark {
+  --background: 15 23 42;
+  --foreground: 241 245 249;
+  --muted: 30 41 59;
+  --muted-foreground: 148 163 184;
+  --border: 51 65 85;
+}
+
+/* High contrast theme */
+[data-theme="high-contrast"],
+.high-contrast {
+  --background: 0 0 0;
+  --foreground: 255 255 255;
+  --muted: 30 30 30;
+  --muted-foreground: 200 200 200;
+  --border: 255 255 255;
+  --color-primary: 255 255 0;
+  --color-primary-foreground: 0 0 0;
+}
+
+/* ── Base styles ──────────────────────────────────────────── */
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+}
+
+/* ── Kiosk-specific ───────────────────────────────────────── */
+
+/* Full-screen kiosk — hide scrollbars */
+html, body {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Touch targets — minimum 48px */
+button, [role="button"] {
+  min-height: 3rem;
+  min-width: 3rem;
+}
+
+/* Disable text selection in kiosk mode */
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ── Accessibility bar ────────────────────────────────────── */
+@layer components {
+  .accessibility-btn {
+    @apply flex items-center justify-center
+           w-12 h-12 rounded-full
+           bg-black/30 backdrop-blur-sm
+           text-white border border-white/20
+           hover:bg-black/50 active:scale-95
+           transition-all duration-150
+           text-lg;
+  }
+
+  /* Dot indicator — shown when setting differs from default */
+  .changed-dot {
+    @apply absolute -top-1 -right-1
+           w-3 h-3 rounded-full
+           bg-yellow-400 border-2 border-black/20;
+  }
+}
