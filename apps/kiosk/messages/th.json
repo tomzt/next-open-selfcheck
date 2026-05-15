@@ -1,0 +1,111 @@
+{
+  "common": {
+    "appName": "ระบบยืม-คืนหนังสือด้วยตนเอง",
+    "loading": "กำลังโหลด...",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "retry": "ลองใหม่",
+    "close": "ปิด",
+    "back": "ย้อนกลับ",
+    "contact_staff": "ติดต่อเจ้าหน้าที่"
+  },
+
+  "welcome": {
+    "cta": "แตะเพื่อเริ่มต้น",
+    "cta_sub": "หรือสแกนบัตรนักศึกษา"
+  },
+
+  "auth": {
+    "title": "เข้าสู่ระบบ",
+    "subtitle": "กรุณายืนยันตัวตนเพื่อใช้บริการ",
+    "login_with": "เข้าสู่ระบบด้วย {provider}",
+    "logging_in": "กำลังเข้าสู่ระบบ...",
+    "logout": "ออกจากระบบ",
+    "session_expired": "หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่"
+  },
+
+  "menu": {
+    "title": "เลือกบริการ",
+    "borrow": "ยืมหนังสือ",
+    "return": "คืนหนังสือ",
+    "check_status": "ตรวจสอบรายการ",
+    "check_fines": "ค้นหาค่าปรับ"
+  },
+
+  "transaction": {
+    "borrow": {
+      "title": "ยืมหนังสือ",
+      "instruction": "สแกน Barcode หรือวาง RFID Tag บนเครื่องอ่าน",
+      "scanning": "กำลังอ่านข้อมูล...",
+      "confirm_title": "ยืนยันการยืม",
+      "confirm_message": "คุณต้องการยืม \"{title}\" ใช่หรือไม่?",
+      "success": "ยืมหนังสือสำเร็จ",
+      "success_detail": "กำหนดคืน: {dueDate}",
+      "failed": "ไม่สามารถยืมหนังสือได้",
+      "add_more": "ยืมเพิ่ม",
+      "done": "เสร็จสิ้น"
+    },
+    "return": {
+      "title": "คืนหนังสือ",
+      "instruction": "สแกน Barcode หรือวาง RFID Tag บนเครื่องอ่าน",
+      "scanning": "กำลังอ่านข้อมูล...",
+      "confirm_title": "ยืนยันการคืน",
+      "confirm_message": "คุณต้องการคืน \"{title}\" ใช่หรือไม่?",
+      "success": "คืนหนังสือสำเร็จ",
+      "failed": "ไม่สามารถคืนหนังสือได้",
+      "add_more": "คืนเพิ่ม",
+      "done": "เสร็จสิ้น"
+    },
+    "status": {
+      "title": "ตรวจสอบรายการยืม",
+      "no_items": "ไม่มีรายการยืมในขณะนี้",
+      "item_count": "รายการที่ยืมอยู่: {count} รายการ",
+      "due_date": "กำหนดคืน",
+      "overdue": "เกินกำหนดคืน"
+    },
+    "fines": {
+      "title": "ค้นหาค่าปรับ",
+      "no_fines": "ไม่มีค่าปรับ",
+      "total": "ค่าปรับทั้งหมด: {amount} บาท",
+      "item": "รายการ",
+      "amount": "จำนวน"
+    }
+  },
+
+  "sip2": {
+    "connecting": "กำลังเชื่อมต่อ...",
+    "connecting_retry": "กำลังเชื่อมต่อ... (ครั้งที่ {current}/{total})",
+    "connection_failed": "ไม่สามารถเชื่อมต่อระบบห้องสมุดได้",
+    "connection_failed_detail": "กรุณาติดต่อเจ้าหน้าที่ หรือลองใหม่อีกครั้ง",
+    "timeout": "หมดเวลาการเชื่อมต่อ"
+  },
+
+  "session": {
+    "timeout_warning": "หมดเวลาใน {seconds} วินาที",
+    "timeout_reset": "รีเซ็ตการตั้งค่ากลับสู่ค่าเริ่มต้น",
+    "extend": "ใช้งานต่อ"
+  },
+
+  "accessibility": {
+    "font_size": "ขนาดตัวอักษร",
+    "font_small": "เล็ก",
+    "font_medium": "กลาง",
+    "font_large": "ใหญ่",
+    "font_xlarge": "ใหญ่มาก",
+    "theme": "ธีม",
+    "theme_light": "สว่าง",
+    "theme_dark": "มืด",
+    "theme_high_contrast": "คอนทราสต์สูง",
+    "language": "ภาษา",
+    "changed_from_default": "ถูกเปลี่ยนจากค่าเริ่มต้น"
+  },
+
+  "error": {
+    "generic": "เกิดข้อผิดพลาด กรุณาลองใหม่",
+    "item_not_found": "ไม่พบข้อมูลหนังสือ",
+    "patron_blocked": "บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อเจ้าหน้าที่",
+    "item_not_available": "หนังสือไม่พร้อมให้ยืมในขณะนี้",
+    "already_borrowed": "หนังสือเล่มนี้ถูกยืมไปแล้ว",
+    "scan_failed": "อ่านข้อมูลไม่ได้ กรุณาลองใหม่"
+  }
+}

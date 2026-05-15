@@ -1,0 +1,111 @@
+{
+  "common": {
+    "appName": "Library Self-Check",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "retry": "Try Again",
+    "close": "Close",
+    "back": "Back",
+    "contact_staff": "Contact Staff"
+  },
+
+  "welcome": {
+    "cta": "Tap to Begin",
+    "cta_sub": "Or scan your student card"
+  },
+
+  "auth": {
+    "title": "Sign In",
+    "subtitle": "Please verify your identity to continue",
+    "login_with": "Sign in with {provider}",
+    "logging_in": "Signing in...",
+    "logout": "Sign Out",
+    "session_expired": "Session expired. Please sign in again."
+  },
+
+  "menu": {
+    "title": "Select a Service",
+    "borrow": "Borrow",
+    "return": "Return",
+    "check_status": "My Loans",
+    "check_fines": "My Fines"
+  },
+
+  "transaction": {
+    "borrow": {
+      "title": "Borrow",
+      "instruction": "Scan barcode or place RFID tag on the reader",
+      "scanning": "Reading...",
+      "confirm_title": "Confirm Borrow",
+      "confirm_message": "Borrow \"{title}\"?",
+      "success": "Borrowed Successfully",
+      "success_detail": "Due date: {dueDate}",
+      "failed": "Could Not Borrow Item",
+      "add_more": "Borrow Another",
+      "done": "Done"
+    },
+    "return": {
+      "title": "Return",
+      "instruction": "Scan barcode or place RFID tag on the reader",
+      "scanning": "Reading...",
+      "confirm_title": "Confirm Return",
+      "confirm_message": "Return \"{title}\"?",
+      "success": "Returned Successfully",
+      "failed": "Could Not Return Item",
+      "add_more": "Return Another",
+      "done": "Done"
+    },
+    "status": {
+      "title": "My Loans",
+      "no_items": "No items currently on loan",
+      "item_count": "Items on loan: {count}",
+      "due_date": "Due Date",
+      "overdue": "Overdue"
+    },
+    "fines": {
+      "title": "My Fines",
+      "no_fines": "No outstanding fines",
+      "total": "Total fines: {amount} THB",
+      "item": "Item",
+      "amount": "Amount"
+    }
+  },
+
+  "sip2": {
+    "connecting": "Connecting...",
+    "connecting_retry": "Connecting... (attempt {current} of {total})",
+    "connection_failed": "Could not connect to the library system",
+    "connection_failed_detail": "Please contact staff or try again",
+    "timeout": "Connection timed out"
+  },
+
+  "session": {
+    "timeout_warning": "Session ending in {seconds} seconds",
+    "timeout_reset": "Settings reset to defaults",
+    "extend": "Continue"
+  },
+
+  "accessibility": {
+    "font_size": "Font Size",
+    "font_small": "Small",
+    "font_medium": "Medium",
+    "font_large": "Large",
+    "font_xlarge": "Extra Large",
+    "theme": "Theme",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "theme_high_contrast": "High Contrast",
+    "language": "Language",
+    "changed_from_default": "Changed from default"
+  },
+
+  "error": {
+    "generic": "Something went wrong. Please try again.",
+    "item_not_found": "Item not found",
+    "patron_blocked": "Your account has been suspended. Please contact staff.",
+    "item_not_available": "Item is not available for borrowing",
+    "already_borrowed": "This item is already on loan",
+    "scan_failed": "Could not read item. Please try again."
+  }
+}
