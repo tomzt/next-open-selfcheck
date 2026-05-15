@@ -1,0 +1,12 @@
+{
+  "name": "@open-selfcheck/rfid-adapter",
+  "version": "0.1.0",
+  "description": "Hardware abstraction layer for ISO 15693 RFID readers",
+  "license": "GPL-3.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/"
+  }
+}

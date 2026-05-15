@@ -1,0 +1,13 @@
+{
+  "name": "@open-selfcheck/sip2-client",
+  "version": "0.1.0",
+  "description": "SIP2 TCP client for library self-check — ILS agnostic",
+  "license": "GPL-3.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "mock-server": "ts-node src/mock/server.ts",
+    "lint": "eslint src/"
+  }
+}
