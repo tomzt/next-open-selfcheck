@@ -18,9 +18,15 @@
   "auth": {
     "title": "Sign In",
     "subtitle": "Please verify your identity to continue",
+    "card_number": "Library Card Number",
+    "scan_or_type": "Scan card / QR or enter card number",
+    "pin": "PIN",
+    "sign_in": "Sign In",
+    "or": "or",
     "login_with": "Sign in with {provider}",
     "logging_in": "Signing in...",
     "logout": "Sign Out",
+    "invalid_credentials": "Not found. Please try again or contact staff.",
     "session_expired": "Session expired. Please sign in again."
   },
 
