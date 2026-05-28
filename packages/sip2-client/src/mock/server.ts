@@ -17,7 +17,8 @@ function checkoutResponse(itemBarcode: string): string {
   const transactionDate = sipDate()
   const dueDate = sipDueDate()
 
-  return `120${ok}${renewalOk}${magneticMedia}${desensitize}${transactionDate}` +
+  // SIP2 msg 12: type(2) + ok(1) + renewalOk(1) + magneticMedia(1) + desensitize(1) + date(18)
+  return `12${ok}${renewalOk}${magneticMedia}${desensitize}${transactionDate}` +
     `AO|AA123456|AB${itemBarcode}|AJMock Book Title|AH${dueDate}|`
 }
 
@@ -28,7 +29,8 @@ function checkinResponse(itemBarcode: string): string {
   const alert = 'N'
   const transactionDate = sipDate()
 
-  return `100${ok}${resensitize}${magneticMedia}${alert}${transactionDate}` +
+  // SIP2 msg 10: type(2) + ok(1) + resensitize(1) + magneticMedia(1) + alert(1) + date(18)
+  return `10${ok}${resensitize}${magneticMedia}${alert}${transactionDate}` +
     `AO|AB${itemBarcode}|AQMain Library|AJMock Book Title|`
 }
 
@@ -66,7 +68,7 @@ function patronInfoResponse(patronId: string, summary: string): string {
   }
 
   if (wantFines) {
-    resp += `BV${MOCK_FINE_AMOUNT}|BHTHU|`
+    resp += `BV${MOCK_FINE_AMOUNT}|BHTHB|`
   }
 
   return resp
