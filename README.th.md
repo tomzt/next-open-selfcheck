@@ -7,9 +7,9 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20+-green)](https://nodejs.org)
 [![Based on](https://img.shields.io/badge/based%20on-GallusMax%2Fopen--source--self--check-orange)](https://github.com/GallusMax/open-source-self-check)
 
-ระบบ Self-Check ห้องสมุดรุ่นใหม่ที่พัฒนาต่อยอดจาก [GallusMax/open-source-self-check](https://github.com/GallusMax/open-source-self-check) โดยเปลี่ยน stack จาก PHP มาเป็น **Node.js/Next.js** พร้อม architecture แบบ pluggable และ Workstation สำหรับจัดการ RFID (optional)
+ระบบ Self-Check ห้องสมุดรุ่นใหม่ที่พัฒนาต่อยอดจาก [GallusMax/open-source-self-check](https://github.com/GallusMax/open-source-self-check) โดยเปลี่ยน stack จาก PHP มาเป็น **Node.js/Next.js** พร้อม UI 5 ธีม, ระบบ Auth แบบ pluggable และรองรับ RFID (optional)
 
-ออกแบบมาสำหรับ **ห้องสมุดทุกแห่งทั่วโลก** — ผู้ deploy อ้างอิง (Reference Deployer) คือ มทร.อีสาน (RMUTI) ประเทศไทย ห้องสมุดที่ใช้ ILS ที่รองรับ SIP2 (Koha, Evergreen, WALAI, ALIST ฯลฯ) สามารถ deploy ระบบนี้ได้ทันที
+ออกแบบมาสำหรับ **ห้องสมุดทุกแห่งทั่วโลก** — ผู้ deploy อ้างอิง (Reference Deployer) คือ มทร.อีสาน (RMUTI) ประเทศไทย ห้องสมุดที่ใช้ ILS รองรับ SIP2 (Koha, Evergreen, WALAI, ALIST ฯลฯ) สามารถ deploy ได้ทันทีโดยไม่ต้องแก้โค้ด
 
 ---
 
@@ -17,24 +17,30 @@
 
 | | [GallusMax/open-source-self-check](https://github.com/GallusMax/open-source-self-check) | **next-open-selfcheck** |
 |---|---|---|
-| **Stack** | PHP | Next.js + Node.js |
-| **SIP2** | PHP socket | Node.js `net` module (server-side only) |
-| **Authentication** | พื้นฐาน | NextAuth.js (เปลี่ยน provider ได้) |
+| **Stack** | PHP | Next.js 15 + Node.js |
+| **SIP2** | PHP socket | Node.js `net` (server-side, รองรับทุก ILS) |
+| **Authentication** | พื้นฐาน | NextAuth.js — สแกนบัตร/QR ผ่าน SIP2 หรือ OIDC provider ใดก็ได้ |
+| **UI** | HTML พื้นฐาน | 5 ธีม: light / dark / colorful / glass / material |
+| **การทำรายการ** | ทีละรายการ | Batch scan → ดูรายการ → ยืนยัน → ส่ง email |
+| **ใบเสร็จ** | พิมพ์ slip | ส่ง email (รักษ์โลก ไม่ต้องพิมพ์) |
 | **RFID** | — | ISO 15693 ผ่าน Web Serial API (optional) |
-| **Workstation** | — | สำหรับเจ้าหน้าที่โปรแกรม RFID Tag (optional) |
+| **Bookdrop** | — | ตู้รับคืนอัตโนมัติ รองรับ RFID (แผนในอนาคต) |
+| **Workstation** | — | สำหรับเจ้าหน้าที่โปรแกรม RFID Tag (แผนในอนาคต) |
 | **Deploy** | PHP server | Docker per site |
-| **Config** | แก้โค้ด | `.env` + First-Run Setup Wizard |
+| **Config** | แก้โค้ด | `.env` เท่านั้น — ไม่ต้องแก้โค้ดเพื่อ deploy |
+| **i18n** | — | ภาษาไทย + อังกฤษ พร้อม community เพิ่มภาษาได้ |
 
 ---
 
 ## แอปพลิเคชัน
 
-| แอป | คำอธิบาย | Deploy |
+| แอป | คำอธิบาย | สถานะ |
 |---|---|---|
-| [`apps/kiosk`](./apps/kiosk) | ตู้ Self-Check สำหรับผู้ใช้ — ยืม, คืน, ตรวจสอบรายการ, ค้นหาค่าปรับ | Docker per site |
-| [`apps/workstation`](./apps/workstation) | Workstation สำหรับเจ้าหน้าที่ — โปรแกรม Tag, เขียน AFI, Batch program | LAN web app (optional) |
+| [`apps/kiosk`](./apps/kiosk) | ตู้ Self-Check — ยืม, คืน, ตรวจสอบรายการ, ค้นหาค่าปรับ | ✅ Phase 3 เสร็จแล้ว |
+| [`apps/bookdrop`](./apps/bookdrop) | ตู้รับคืนอัตโนมัติ — RFID-only ไม่มีหน้าจอสัมผัส | 📋 แผน (Phase 5) |
+| [`apps/workstation`](./apps/workstation) | Workstation เจ้าหน้าที่ — โปรแกรม RFID Tag | 📋 แผน (Phase 6) |
 
-ทั้งสองแอปเป็น **อิสระต่อกัน** — deploy Kiosk ได้โดยไม่ต้องมี Workstation ถ้าไม่ใช้ RFID
+แต่ละแอป **เป็นอิสระต่อกัน** — deploy Kiosk ได้โดยไม่ต้องมี Bookdrop หรือ Workstation
 
 ---
 
@@ -43,64 +49,35 @@
 ### ความต้องการของระบบ
 
 - Node.js 20+
-- Docker + Docker Compose (สำหรับ Kiosk)
-- Chrome/Chromium (สำหรับ Workstation — Web Serial API)
-- ILS ที่รองรับ SIP2 (หรือใช้ Mock SIP2 server สำหรับ development)
+- Docker + Docker Compose
+- ILS ที่รองรับ SIP2 — หรือใช้ **mock server** ที่มีในโปรเจกต์สำหรับ development
 
-### Kiosk
+### Development (ใช้ mock SIP2 ไม่ต้องมี ILS จริง)
+
+```bash
+# 1. ติดตั้ง dependencies (monorepo)
+npm install
+
+# 2. เริ่ม mock SIP2 server (TCP :6002)
+cd packages/sip2-client
+npm run mock-server
+
+# 3. เปิด terminal ใหม่ เริ่ม kiosk dev server
+cd apps/kiosk
+cp .env.example .env.local
+# ตั้ง SIP2_HOST=localhost ใน .env.local
+npm run dev
+```
+
+เปิด `http://localhost:3000` — สแกน barcode ใดก็ได้เพื่อ login กับ mock server
+
+### Production (Docker)
 
 ```bash
 cd apps/kiosk
 cp .env.example .env
-# แก้ไข .env ตามค่าของระบบ เช่น SIP2 host, auth provider
+# แก้ไข .env: SIP2_HOST, NEXTAUTH_SECRET, email config ฯลฯ
 docker compose up -d
-```
-
-เปิด `http://localhost:3000` — First-Run Setup Wizard จะแนะนำการตั้งค่าทีละขั้นตอน
-
-### Workstation (optional — สำหรับ RFID เท่านั้น)
-
-```bash
-cd apps/workstation
-cp .env.example .env
-# แก้ไข .env เช่น library code, ILS lookup URL
-npm install
-npm run dev
-```
-
-เปิด `http://localhost:3001` ด้วย Chrome/Chromium แล้วเสียบ RFID Reader ISO 15693 (เช่น ACS ACR1552U)
-
----
-
-## สถาปัตยกรรมระบบ
-
-```
-ตู้ Kiosk (หน้าจอสัมผัส)
-  └─ apps/kiosk (Next.js + PostgreSQL, Docker)
-        └─ SIP2 over TCP ──LAN──► ILS (รองรับ SIP2 ทุกยี่ห้อ)
-        └─ RFID (Phase 3, optional) ผ่าน packages/rfid-adapter
-
-Workstation เจ้าหน้าที่ (PC ห้องสมุด)
-  └─ apps/workstation (Next.js, LAN-hosted)
-        └─ USB ──► RFID Reader ISO 15693 (เช่น ACR1552U)
-        └─ RFID ผ่าน packages/rfid-adapter (package เดียวกับ Kiosk)
-```
-
-### โครงสร้าง Monorepo
-
-```
-next-open-selfcheck/
-  apps/
-    kiosk/              ← ตู้ Self-Check (Next.js, Docker)
-    workstation/        ← Workstation เจ้าหน้าที่ (Next.js, LAN)
-  packages/
-    rfid-adapter/       ← Hardware abstraction layer (ใช้ร่วมกัน)
-      src/
-        interface.ts    ← RFIDAdapter interface
-        web-serial/     ← Driver ISO 15693 ผ่าน Web Serial API
-    sip2-client/        ← SIP2 TCP client (ใช้โดย Kiosk)
-    ui-components/      ← UI components ร่วม (optional)
-  docs/
 ```
 
 ---
@@ -108,95 +85,169 @@ next-open-selfcheck/
 ## Flow การใช้งาน (Kiosk)
 
 ```
-หน้าจอต้อนรับ (วิดีโอ loop)
-  → ผู้ใช้แตะหน้าจอ
-หน้า Login (provider ตาม config)
-  → เข้าสู่ระบบสำเร็จ
-เมนูหลัก: ยืม / คืน / ตรวจสอบรายการ / ค้นหาค่าปรับ
-  → สแกน Barcode หรือ RFID Tag
-ทำรายการ → SIP2 → แสดงผล
-  → เสร็จสิ้นหรือหมดเวลา → หน้าต้อนรับ
+หน้าจอต้อนรับ
+  ↓ ผู้ใช้แตะหน้าจอ
+หน้า Login  (สแกนบัตร/QR หรือ OIDC SSO)
+  ↓ เข้าสู่ระบบสำเร็จ
+เมนูหลัก  (แสดงเฉพาะบริการที่เปิดใช้งาน)
+  ↓ เลือก ยืม หรือ คืน
+โหมดสแกน  — สแกน/วาง RFID ได้หลายรายการ รายการสะสมใน list
+  ↓ "สแกนเสร็จแล้ว"
+โหมด Review  — ดูรายการทั้งหมด ลบรายการที่ไม่ต้องการได้
+  ↓ ยืนยัน
+กำลังประมวลผล  — ส่ง SIP2 ทุกรายการ
+  ↓ เสร็จสิ้น
+ส่ง email สรุปรายการให้ผู้ใช้  →  หน้าจอต้อนรับ
 ```
+
+ตรวจสอบรายการยืมและค้นหาค่าปรับ แสดงข้อมูลจาก ILS อย่างเดียว ไม่ต้องยืนยัน
+
+---
+
+## ธีม UI
+
+ตั้งค่าครั้งเดียวต่อตู้ผ่าน `NEXT_PUBLIC_KIOSK_THEME` ไม่ต้องแก้โค้ด
+
+| ธีม | สไตล์ | เหมาะกับ |
+|---|---|---|
+| `light` *(ค่าเริ่มต้น)* | ขาว + Indigo accent | ใช้ทั่วไป ห้องสว่าง |
+| `dark` | Slate-950 + Cyan neon | ห้องมืด ห้องสื่อ |
+| `colorful` | ขาว + Violet accent | โรงเรียน ห้องสมุดเยาวชน |
+| `glass` | Dark gradient + Frosted blur | ล็อบบี้ทันสมัย |
+| `material` | M3 tonal surface + pill button | ผู้ใช้คุ้นเคยกับ Google |
+
+ทุกธีมใช้ component tree เดียวกัน — เปลี่ยนธีม = เปลี่ยน ENV var แล้ว redeploy
 
 ---
 
 ## การตั้งค่า
 
-ทุก config ผ่านไฟล์ `.env` และ First-Run Setup Wizard — **ไม่ต้องแก้ไข source code** เพื่อ deploy ในองค์กรของคุณ
+**ไม่ต้องแก้โค้ดเพื่อ deploy** ทุก config อยู่ใน `.env`
 
-### Kiosk — ตัวแปรหลักใน `.env`
+### ตัวแปรหลัก — Kiosk
 
 ```env
-# SIP2
+# SIP2 connection
 SIP2_HOST=192.168.1.100
 SIP2_PORT=6002
-SIP2_CHECKSUM_ENABLED=false
+SIP2_INSTITUTION=LIBRARY
+SIP2_LOGIN_USER=
+SIP2_LOGIN_PASSWORD=
 
-# Auth (เปลี่ยน provider ได้ — รองรับ NextAuth.js ทุก provider)
-AUTH_PROVIDER=keycloak
-KEYCLOAK_ISSUER=https://your-keycloak/realms/your-realm
-KEYCLOAK_CLIENT_ID=
-KEYCLOAK_CLIENT_SECRET=
+# Auth mode: barcode | oidc | both
+AUTH_MODE=barcode
+AUTH_PIN_REQUIRED=false   # false = สแกนบัตร/QR เท่านั้น ไม่ต้องใส่ PIN
 
-# RFID (optional)
-RFID_ENABLED=false
-RFID_DRIVER=webserial
+# OIDC (ต้องการเมื่อ AUTH_MODE=oidc หรือ both)
+OIDC_ISSUER=https://keycloak.example.com/realms/library
+OIDC_CLIENT_ID=
+OIDC_CLIENT_SECRET=
+OIDC_PROVIDER_NAME=ระบบ SSO สถาบัน
+
+# UI
+NEXT_PUBLIC_KIOSK_THEME=light        # light | dark | colorful | glass | material
+NEXT_PUBLIC_DEFAULT_LANGUAGE=th      # th | en
+KIOSK_SERVICES=borrow,return,loans,fines   # ลบบริการที่ไม่ต้องการออก
 
 # Session
 SESSION_TIMEOUT_MINUTES=3
 SCREENSAVER_TIMEOUT_MINUTES=5
-```
 
-### Workstation — ตัวแปรหลักใน `.env`
+# Email ใบเสร็จ (แทนการพิมพ์ slip)
+EMAIL_PROVIDER=smtp          # smtp | resend | sendgrid | disabled
+SMTP_HOST=mail.example.com
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM=library@example.com
 
-```env
-RFID_ENABLED=true
+# RFID (optional — Phase 4)
+RFID_ENABLED=false
 RFID_DRIVER=webserial
-LIBRARY_CODE=รหัสห้องสมุดของคุณ
-STAFF_AUTH_SECRET=เปลี่ยน-ค่านี้
-STAFF_AUTH_USER=admin
-STAFF_AUTH_PASSWORD=เปลี่ยน-รหัสผ่าน
-ILS_LOOKUP_ENABLED=false
-DEFAULT_LANGUAGE=th
 ```
 
-ดูรายละเอียดครบได้ที่ [`apps/kiosk/.env.example`](./apps/kiosk/.env.example) และ [`apps/workstation/.env.example`](./apps/workstation/.env.example)
+ดูรายละเอียดครบได้ที่ [`apps/kiosk/.env.example`](./apps/kiosk/.env.example)
+
+---
+
+## สถาปัตยกรรมระบบ
+
+```
+ตู้ Kiosk (หน้าจอสัมผัส, browser เต็มจอ)
+  └─ apps/kiosk  (Next.js 15 + PostgreSQL, Docker)
+        ├─ NextAuth.js ──► SIP2 (บัตร) หรือ OIDC provider
+        ├─ SIP2 Client ──LAN──► ILS (Koha / ALMA / WALAI / ทุก SIP2 v2.0)
+        └─ rfid-adapter ──USB──► เครื่องอ่าน ISO 15693 (optional, Phase 4)
+
+ตู้ Bookdrop (ช่องคืนหนังสือ ไม่มีหน้าจอ)
+  └─ apps/bookdrop  (Node.js service, แผน Phase 5)
+        ├─ rfid-adapter ──USB──► sensor RFID (detect tag ขณะหนังสือไหลผ่าน)
+        └─ SIP2 Client ──LAN──► ILS (auto-checkin)
+
+Workstation เจ้าหน้าที่ (PC ห้องสมุด, Chrome)
+  └─ apps/workstation  (Next.js, LAN-hosted, แผน Phase 6)
+        └─ rfid-adapter ──USB──► เครื่องอ่าน ISO 15693 (โปรแกรม Tag)
+```
+
+### โครงสร้าง Monorepo
+
+```
+next-open-selfcheck/
+  apps/
+    kiosk/          ← ตู้ Self-Check (Next.js, Docker)         ✅
+    bookdrop/       ← ตู้รับคืนอัตโนมัติ (Node.js)             📋 แผน
+    workstation/    ← Workstation เจ้าหน้าที่ (Next.js)        📋 แผน
+  packages/
+    rfid-adapter/   ← Hardware abstraction ISO 15693 (ใช้ร่วมกัน)
+    sip2-client/    ← SIP2 TCP client + mock server (ใช้ร่วมกัน)
+  docs/
+    requirements.md ← Spec ครบถ้วนและ design decisions ทั้งหมด
+    architecture.md
+    i18n.md
+```
+
+---
+
+## SIP2 Messages ที่ใช้
+
+| การทำงาน | Message | Response |
+|---|---|---|
+| Login | 93 → 94 | ok flag ที่ char[2] |
+| ยืนยันตัวตนผู้ใช้ | 63 (Patron Information) | 64 — BL=valid patron |
+| ยืม | 11 (Checkout Request) | 12 — ok ที่ [2] |
+| คืน | 09 (Checkin Request) | 10 — ok ที่ [2], alert ที่ [5] |
+| ตรวจสอบรายการยืม | 63 + summary `  Y       ` | 64 — AU fields (charged items) |
+| ค้นหาค่าปรับ | 63 + summary `   Y      ` | 64 — BV field (ยอดรวม) |
+| Email ผู้ใช้ | 63 | 64 — BE field (สำหรับส่ง email ใบเสร็จ) |
 
 ---
 
 ## RFID
 
-RFID เป็น **optional** — ตั้ง `RFID_ENABLED=false` เพื่อใช้ Barcode เท่านั้น
+เป็น optional — ตั้ง `RFID_ENABLED=false` เพื่อใช้ Barcode เท่านั้น
 
-Hardware อ้างอิง: **ACS ACR1552U** (ISO 15693, USB Type-C, plug & play บน Windows/Linux/macOS)
+Hardware อ้างอิง: **ACS ACR1552U** (ISO 15693, USB, plug & play)
 
 | ค่า AFI | ความหมาย | เขียนโดย |
 |---|---|---|
 | `0x07` | อยู่ในห้องสมุด / พร้อมให้ยืม | Workstation (program) หรือ Kiosk (check-in) |
-| `0x02` | ถูกยืมออกไป | Kiosk (check-out) |
+| `0x02` | ถูกยืมออก | Kiosk (check-out) |
 
----
-
-## แผนการพัฒนา
-
-| Phase | ขอบเขต | สถานะ |
-|---|---|---|
-| **1 — Core MVP** | Kiosk: Auth + Barcode + Mock SIP2 | 🔄 กำลังพัฒนา |
-| **2 — Open Source Release** | Docs, pluggable arch, i18n, fork | ⏳ ถัดไป |
-| **3 — Hardware** | Kiosk RFID + Workstation (พร้อมกัน) | ⏳ อนาคต |
-| **4 — Contribution Round 2** | Hardware docs upstream | ⏳ อนาคต |
+**Bookdrop รองรับเฉพาะ RFID เท่านั้น** — หนังสือที่ยืมผ่าน Barcode ไม่สามารถคืนผ่านตู้ Bookdrop ได้
 
 ---
 
 ## ILS ที่รองรับ
 
-รองรับ ILS ที่ใช้ SIP2 v2.0 ทุกระบบ:
+รองรับ ILS ที่ใช้ **SIP2 v2.0** ทุกระบบ:
 
-- ✅ ALIST (PSU)
-- ✅ Koha
-- ✅ Evergreen
-- ✅ WALAI AutoLib
-- ✅ ทุก ILS ที่รองรับ SIP2 v2.0
+| ILS | สถานะ |
+|---|---|
+| ALIST (มอ. / PSU Thailand) | ✅ |
+| WALAI AutoLib | ✅ |
+| Koha | ✅ (community) |
+| Evergreen | ✅ (community) |
+| ALMA, Symphony, Polaris | SIP2 v2.0 compliant — ควรใช้งานได้ |
 
 ---
 
@@ -204,19 +255,39 @@ Hardware อ้างอิง: **ACS ACR1552U** (ISO 15693, USB Type-C, plug & 
 
 ### Mock SIP2 Server
 
-ไม่จำเป็นต้องมี ILS จริงระหว่าง development:
+ไม่ต้องมี ILS จริงระหว่าง development:
 
 ```bash
 cd packages/sip2-client
+npm install
 npm run mock-server   # เปิด TCP server ที่ port 6002
 ```
 
-### เริ่มทุกแอปพร้อมกัน
+มีข้อมูล mock: รายการยืม 2 รายการ, ค่าปรับ 0 บาท แก้ไขได้ที่ `src/mock/server.ts`
+
+### รันแอปเดียว
 
 ```bash
-npm install
-npm run dev
+# จาก root ของ monorepo
+npm run dev --workspace=apps/kiosk
 ```
+
+---
+
+## แผนการพัฒนา
+
+| Phase | ขอบเขต | สถานะ |
+|---|---|---|
+| **1** | Scaffold, Welcome Screen, i18n (TH/EN), Docker, Mock SIP2 | ✅ เสร็จแล้ว |
+| **2** | Auth — SIP2 barcode, OIDC-generic, middleware guard | ✅ เสร็จแล้ว |
+| **3** | เมนูหลัก, transaction screens, session timeout, UI 5 ธีม | ✅ เสร็จแล้ว |
+| **3b** | Batch scan flow, email ใบเสร็จ, `KIOSK_SERVICES` toggle | 🔄 ถัดไป |
+| **4** | RFID — rfid-adapter, ISO 15693, เขียน AFI ตอนยืม/คืน | 📋 แผน |
+| **5** | Bookdrop app — auto-return RFID, log รายการคืน | 📋 แผน |
+| **6** | Workstation app — โปรแกรม RFID Tag | 📋 แผน |
+| **7** | First-Run Setup Wizard — web UI สร้าง `.env` ตอน boot ครั้งแรก | 📋 แผน |
+
+ดู spec และ design decisions ครบถ้วนได้ที่ [`docs/requirements.md`](./docs/requirements.md)
 
 ---
 
@@ -224,17 +295,14 @@ npm run dev
 
 ดูรายละเอียดที่ [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-หลักการ **Open Source First** — ทุก contribution ต้องใช้งานได้กับห้องสมุดทุกแห่ง ทุกประเทศ โดยไม่มี assumption เฉพาะองค์กรใดในโค้ดหลัก
+หลักการ **Open Source First** — ทุก contribution ต้องใช้งานได้กับห้องสมุดทุกแห่ง ทุกประเทศ โดยไม่มี assumption เฉพาะองค์กรใดในโค้ดหลัก config ทั้งหมดอยู่ใน `.env` ไม่ใช่ใน source code
 
 ---
 
 ## เครดิต
 
 - พัฒนาต่อยอดจาก [GallusMax/open-source-self-check](https://github.com/GallusMax/open-source-self-check) (PHP, GPL-3.0)
-- Thai localization พัฒนาโดย ต้อม (Tom)
 - Reference Deployer: มทร.อีสาน (RMUTI), ประเทศไทย
-
----
 
 ## License
 
