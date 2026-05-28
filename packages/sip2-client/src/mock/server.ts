@@ -32,18 +32,49 @@ function checkinResponse(itemBarcode: string): string {
     `AO|AB${itemBarcode}|AQMain Library|AJMock Book Title|`
 }
 
-function patronInfoResponse(patronId: string): string {
-  const validPatron = 'Y'
-  const validPatronPassword = 'Y'
-  const transactionDate = sipDate()
+const MOCK_LOANS = [
+  { barcode: 'BOOK-001', title: 'Library Self-Check Systems', dueDate: 'Sat Jun 13 2026' },
+  { barcode: 'BOOK-002', title: 'Digital Library Management', dueDate: 'Sat Jun 20 2026' },
+]
+const MOCK_FINE_AMOUNT = '0.00'
 
-  return `64              ${transactionDate}000000000000` +
+function patronInfoResponse(patronId: string, summary: string): string {
+  const transactionDate = sipDate()
+  const wantCharged = (summary[2] ?? ' ') === 'Y'
+  const wantFines = (summary[3] ?? ' ') === 'Y'
+
+  const chargedCount = wantCharged
+    ? String(MOCK_LOANS.length).padStart(4, '0')
+    : '0000'
+
+  let resp =
+    `64              ` +  // patron status (14 chars)
+    `000` +               // language
+    transactionDate +
+    `0000` +              // hold items count
+    `0000` +              // overdue items count
+    chargedCount +        // charged items count
+    `0000` +              // fine items count
+    `0000` +              // recall items count
+    `0000` +              // unavail holds count
     `AO|AA${patronId}|AETest Patron|BLY|CQY|`
+
+  if (wantCharged) {
+    for (const loan of MOCK_LOANS) {
+      resp += `AU${loan.barcode}|AJ${loan.title}|AH${loan.dueDate}|`
+    }
+  }
+
+  if (wantFines) {
+    resp += `BV${MOCK_FINE_AMOUNT}|BHTHU|`
+  }
+
+  return resp
 }
 
 function feeResponse(patronId: string): string {
   const transactionDate = sipDate()
-  return `38${transactionDate}AO|AA${patronId}|BV0.00|`
+  return `38${transactionDate}AO|AA${patronId}|BV${MOCK_FINE_AMOUNT}|`
 }
 
 function sipDate(): string {
@@ -77,9 +108,12 @@ function handleMessage(message: string): string {
     case '09': // Checkin
       const checkinItem = message.match(/AB([^|]+)/)?.[1] ?? 'UNKNOWN'
       return checkinResponse(checkinItem)
-    case '63': // Patron info
+    case '63': { // Patron info
       const patron = message.match(/AA([^|]+)/)?.[1] ?? 'UNKNOWN'
-      return patronInfoResponse(patron)
+      // Summary field: 63 (2) + language (3) + date (18) = offset 23, length 10
+      const summary = message.substring(23, 33)
+      return patronInfoResponse(patron, summary)
+    }
     case '37': // Fee paid / inquiry
       const feePatron = message.match(/AA([^|]+)/)?.[1] ?? 'UNKNOWN'
       return feeResponse(feePatron)
