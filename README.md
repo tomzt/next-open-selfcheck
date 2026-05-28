@@ -7,32 +7,40 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20+-green)](https://nodejs.org)
 [![Based on](https://img.shields.io/badge/based%20on-GallusMax%2Fopen--source--self--check-orange)](https://github.com/GallusMax/open-source-self-check)
 
-A next-generation re-engineering of [GallusMax/open-source-self-check](https://github.com/GallusMax/open-source-self-check) — rebuilt from PHP to **Node.js/Next.js** with a modern stack, pluggable architecture, and optional RFID workstation.
+A next-generation re-engineering of [GallusMax/open-source-self-check](https://github.com/GallusMax/open-source-self-check) — rebuilt from PHP to **Node.js/Next.js** with a modern stack, 5-theme UI, pluggable auth, and optional RFID support.
 
-Built for **any library worldwide** — RMUTI (Rajamangala University of Technology Isan, Thailand) is the reference deployer. Any library using a SIP2-compatible ILS (Koha, Evergreen, WALAI, ALIST, etc.) can deploy this system.
+Built for **any library worldwide** — RMUTI (Rajamangala University of Technology Isan, Thailand) is the reference deployer. Any library using a SIP2-compatible ILS (Koha, Evergreen, WALAI, ALIST, etc.) can deploy with zero code changes.
+
+---
 
 ## What's new vs upstream
 
 | | [GallusMax/open-source-self-check](https://github.com/GallusMax/open-source-self-check) | **next-open-selfcheck** |
 |---|---|---|
-| **Stack** | PHP | Next.js + Node.js |
-| **SIP2** | PHP socket | Node.js `net` module (server-side only) |
-| **Auth** | Basic | NextAuth.js (pluggable providers) |
+| **Stack** | PHP | Next.js 15 + Node.js |
+| **SIP2** | PHP socket | Node.js `net` (server-side, ILS-agnostic) |
+| **Auth** | Basic | NextAuth.js — barcode/QR via SIP2, or any OIDC provider |
+| **UI** | Basic HTML | 5 themes: light / dark / colorful / glass / material |
+| **Transaction** | One item at a time | Batch scan → review list → confirm → email receipt |
+| **Receipt** | Thermal printer | Email to patron (eco-friendly, no hardware) |
 | **RFID** | — | ISO 15693 via Web Serial API (optional) |
-| **Workstation** | — | Staff RFID workstation (optional) |
+| **Bookdrop** | — | Automated return station, RFID-only (planned) |
+| **Workstation** | — | Staff RFID tag programming (planned) |
 | **Deploy** | PHP server | Docker per site |
-| **Config** | Code edit | `.env` + First-Run Setup Wizard |
+| **Config** | Code edit | `.env` only — no code change to deploy |
+| **i18n** | — | Thai + English built-in, community-extensible |
 
 ---
 
 ## Apps
 
-| App | Description | Deploy |
+| App | Description | Status |
 |---|---|---|
-| [`apps/kiosk`](./apps/kiosk) | Patron self-check terminal — borrow, return, check status, fee inquiry | Docker per site |
-| [`apps/workstation`](./apps/workstation) | Staff RFID workstation — program tags, write AFI, batch operations | LAN web app (optional) |
+| [`apps/kiosk`](./apps/kiosk) | Patron self-check — borrow, return, loans, fines | ✅ Phase 3 done |
+| [`apps/bookdrop`](./apps/bookdrop) | Automated return station — RFID-only, no touch screen | 📋 Planned (Phase 5) |
+| [`apps/workstation`](./apps/workstation) | Staff RFID workstation — program tags, write AFI | 📋 Planned (Phase 6) |
 
-Both apps are **independent** — deploy Kiosk without Workstation if you don't use RFID.
+All apps are **independent** — deploy Kiosk alone without Bookdrop or Workstation.
 
 ---
 
@@ -41,47 +49,144 @@ Both apps are **independent** — deploy Kiosk without Workstation if you don't 
 ### Prerequisites
 
 - Node.js 20+
-- Docker + Docker Compose (Kiosk only)
-- Chrome/Chromium (Workstation — Web Serial API)
-- A SIP2-compatible ILS (or use the built-in mock server for development)
+- Docker + Docker Compose
+- A SIP2-compatible ILS — or use the built-in **mock server** for development
 
-### Kiosk
+### Development (mock SIP2, no ILS needed)
+
+```bash
+# 1. Install dependencies (monorepo)
+npm install
+
+# 2. Start the mock SIP2 server (TCP :6002)
+cd packages/sip2-client
+npm run mock-server
+
+# 3. In a new terminal, start the kiosk dev server
+cd apps/kiosk
+cp .env.example .env.local
+# Set SIP2_HOST=localhost in .env.local
+npm run dev
+```
+
+Open `http://localhost:3000` — scan any barcode to sign in against the mock server.
+
+### Production (Docker)
 
 ```bash
 cd apps/kiosk
 cp .env.example .env
-# Edit .env with your SIP2 host, auth provider, etc.
+# Edit .env: SIP2_HOST, NEXTAUTH_SECRET, email config, etc.
 docker compose up -d
 ```
 
-Open `http://localhost:3000` — the First-Run Setup Wizard will guide you through configuration.
+---
 
-### Workstation (optional — RFID only)
+## Patron Flow
 
-```bash
-cd apps/workstation
-cp .env.example .env
-# Edit .env with your library code, ILS lookup URL, etc.
-npm install
-npm run dev
+```
+Welcome Screen
+  ↓ tap anywhere
+Auth Screen  (barcode/QR scan, or OIDC SSO)
+  ↓ authenticated
+Main Menu  (services configured by KIOSK_SERVICES env var)
+  ↓ select Borrow or Return
+Scan Mode  — scan / tap as many items as needed, list builds up
+  ↓ "Done scanning"
+Review Mode  — see all items, remove if needed
+  ↓ Confirm
+Processing  — SIP2 transactions sent for all items
+  ↓ Done
+Email receipt sent to patron  →  Welcome Screen
 ```
 
-Open `http://localhost:3001` in Chrome/Chromium. Plug in your ISO 15693 USB RFID reader (e.g. ACS ACR1552U).
+My Loans and My Fines show read-only data from the ILS and require no confirmation.
+
+---
+
+## UI Themes
+
+Set once per kiosk via `NEXT_PUBLIC_KIOSK_THEME`. No code change needed.
+
+| Theme | Style | Best for |
+|---|---|---|
+| `light` *(default)* | White + Indigo accent | General use, bright rooms |
+| `dark` | Slate-950 + Cyan neon | Dim rooms, media centres |
+| `colorful` | White + Violet accent | Schools, youth libraries |
+| `glass` | Dark gradient + frosted blur | Modern lobbies |
+| `material` | M3 tonal surface + pill buttons | Google-familiar users |
+
+All themes share the same component tree — switching is one ENV var + redeploy.
+
+---
+
+## Configuration
+
+**Zero code change to deploy.** Every setting lives in `.env`.
+
+### Key variables — Kiosk
+
+```env
+# SIP2 connection
+SIP2_HOST=192.168.1.100
+SIP2_PORT=6002
+SIP2_INSTITUTION=LIBRARY
+SIP2_LOGIN_USER=
+SIP2_LOGIN_PASSWORD=
+
+# Auth mode: barcode | oidc | both
+AUTH_MODE=barcode
+AUTH_PIN_REQUIRED=false   # false = QR/barcode only, no PIN prompt
+
+# OIDC (required only when AUTH_MODE=oidc or both)
+OIDC_ISSUER=https://keycloak.example.com/realms/library
+OIDC_CLIENT_ID=
+OIDC_CLIENT_SECRET=
+OIDC_PROVIDER_NAME=Institutional SSO
+
+# UI
+NEXT_PUBLIC_KIOSK_THEME=light       # light | dark | colorful | glass | material
+NEXT_PUBLIC_DEFAULT_LANGUAGE=th     # th | en
+KIOSK_SERVICES=borrow,return,loans,fines   # remove any to hide from menu
+
+# Session
+SESSION_TIMEOUT_MINUTES=3
+SCREENSAVER_TIMEOUT_MINUTES=5
+
+# Email receipt (replaces thermal printer)
+EMAIL_PROVIDER=smtp          # smtp | resend | sendgrid | disabled
+SMTP_HOST=mail.example.com
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM=library@example.com
+
+# RFID (optional — Phase 4)
+RFID_ENABLED=false
+RFID_DRIVER=webserial
+```
+
+Full reference: [`apps/kiosk/.env.example`](./apps/kiosk/.env.example)
 
 ---
 
 ## Architecture
 
 ```
-Patron Kiosk (touch screen)
-  └─ apps/kiosk (Next.js + PostgreSQL, Docker)
-        └─ SIP2 over TCP ──LAN──► ILS (any SIP2-compatible)
-        └─ RFID (Phase 3, optional) via packages/rfid-adapter
+Patron Kiosk (touch screen, full-screen browser)
+  └─ apps/kiosk  (Next.js 15 + PostgreSQL, Docker)
+        ├─ NextAuth.js ──► SIP2 (barcode) or OIDC provider
+        ├─ SIP2 Client ──LAN──► ILS (Koha / ALMA / WALAI / any SIP2 v2.0)
+        └─ rfid-adapter ──USB──► ISO 15693 Reader (optional, Phase 4)
 
-Staff Workstation (library PC)
-  └─ apps/workstation (Next.js, LAN-hosted)
-        └─ USB ──► ISO 15693 RFID Reader (e.g. ACR1552U)
-        └─ RFID via packages/rfid-adapter (same package as kiosk)
+Bookdrop Station (drop slot, no screen)
+  └─ apps/bookdrop  (Node.js service, planned Phase 5)
+        ├─ rfid-adapter ──USB──► RFID sensor (detect tag as book slides through)
+        └─ SIP2 Client ──LAN──► ILS (auto-checkin)
+
+Staff Workstation (library PC, Chrome)
+  └─ apps/workstation  (Next.js, LAN-hosted, planned Phase 6)
+        └─ rfid-adapter ──USB──► ISO 15693 Reader (tag programming)
 ```
 
 ### Monorepo
@@ -89,132 +194,100 @@ Staff Workstation (library PC)
 ```
 next-open-selfcheck/
   apps/
-    kiosk/              ← Patron self-check (Next.js, Docker)
-    workstation/        ← Staff RFID workstation (Next.js, LAN)
+    kiosk/          ← Patron self-check (Next.js, Docker)  ✅
+    bookdrop/       ← Automated return (Node.js)           📋 planned
+    workstation/    ← Staff RFID workstation (Next.js)     📋 planned
   packages/
-    rfid-adapter/       ← Hardware abstraction layer (shared)
-      src/
-        interface.ts    ← RFIDAdapter interface
-        web-serial/     ← ISO 15693 driver via Web Serial API
-    sip2-client/        ← SIP2 TCP client (used by kiosk)
-    ui-components/      ← Shared UI primitives (optional)
+    rfid-adapter/   ← ISO 15693 hardware abstraction (shared)
+    sip2-client/    ← SIP2 TCP client + mock server (shared)
   docs/
+    requirements.md ← Full product spec and design decisions
+    architecture.md
+    i18n.md
 ```
 
 ---
 
-## Patron Flow (Kiosk)
+## SIP2 Messages Used
 
-```
-Welcome Screen (video loop)
-  → patron taps
-Auth Screen (pluggable provider)
-  → authenticated
-Main Menu: Borrow / Return / Check Status / Fee Inquiry
-  → scan barcode or RFID tag
-Transaction → SIP2 → result displayed
-  → timeout or complete → Welcome Screen
-```
-
----
-
-## Configuration
-
-All configuration via `.env` files and First-Run Setup Wizard. **No source code modification required** to deploy for any organization.
-
-### Kiosk — key `.env` variables
-
-```env
-# SIP2
-SIP2_HOST=192.168.1.100
-SIP2_PORT=6002
-SIP2_CHECKSUM_ENABLED=false
-
-# Auth (pluggable — any NextAuth.js provider)
-AUTH_PROVIDER=keycloak
-KEYCLOAK_ISSUER=https://your-keycloak/realms/your-realm
-KEYCLOAK_CLIENT_ID=
-KEYCLOAK_CLIENT_SECRET=
-
-# RFID (optional)
-RFID_ENABLED=false
-RFID_DRIVER=webserial
-
-# Session
-SESSION_TIMEOUT_MINUTES=3
-SCREENSAVER_TIMEOUT_MINUTES=5
-```
-
-### Workstation — key `.env` variables
-
-```env
-RFID_ENABLED=true
-RFID_DRIVER=webserial
-LIBRARY_CODE=your-library-code
-STAFF_AUTH_SECRET=change-this-secret
-STAFF_AUTH_USER=admin
-STAFF_AUTH_PASSWORD=change-this
-ILS_LOOKUP_ENABLED=false
-DEFAULT_LANGUAGE=en
-```
-
-See [`apps/kiosk/.env.example`](./apps/kiosk/.env.example) and [`apps/workstation/.env.example`](./apps/workstation/.env.example) for full reference.
+| Operation | Message | Response |
+|---|---|---|
+| Login | 93 → 94 | ok flag at char[2] |
+| Patron auth | 63 (Patron Information) | 64 — BL=valid patron |
+| Borrow | 11 (Checkout Request) | 12 — ok at [2] |
+| Return | 09 (Checkin Request) | 10 — ok at [2], alert at [5] |
+| My Loans | 63 + summary `  Y       ` | 64 — AU fields (charged items) |
+| My Fines | 63 + summary `   Y      ` | 64 — BV field (total amount) |
+| Patron email | 63 | 64 — BE field (for email receipt) |
 
 ---
 
-## RFID Support
+## RFID
 
-RFID is **optional** — set `RFID_ENABLED=false` for barcode-only mode.
+Optional. Set `RFID_ENABLED=false` for barcode-only mode.
 
-Reference hardware: **ACS ACR1552U** (ISO 15693, USB Type-C, plug & play on Windows/Linux/macOS).
+Reference hardware: **ACS ACR1552U** (ISO 15693, USB, plug & play).
 
-| AFI Value | Meaning | Written by |
+| AFI | Meaning | Written by |
 |---|---|---|
 | `0x07` | In library / available | Workstation (program) or Kiosk (check-in) |
 | `0x02` | Checked out | Kiosk (check-out) |
 
----
-
-## Phases
-
-| Phase | Scope | Status |
-|---|---|---|
-| **1 — Core MVP** | Kiosk: Auth + Barcode + Mock SIP2 | 🔄 In progress |
-| **2 — Open Source Release** | Docs, pluggable arch, i18n, fork | ⏳ Next |
-| **3 — Hardware** | Kiosk RFID + Workstation (together) | ⏳ Future |
-| **4 — Contribution Round 2** | Hardware docs upstream | ⏳ Future |
+Bookdrop is **RFID-only** — items checked out via barcode cannot use the drop slot.
 
 ---
 
 ## ILS Compatibility
 
-Works with any SIP2 v2.0 compatible ILS:
+Works with any **SIP2 v2.0** compatible system:
 
-- ✅ ALIST (PSU)
-- ✅ Koha
-- ✅ Evergreen
-- ✅ WALAI AutoLib
-- ✅ Any SIP2 v2.0 compatible system
+| ILS | Tested |
+|---|---|
+| ALIST (PSU Thailand) | ✅ |
+| WALAI AutoLib | ✅ |
+| Koha | ✅ (community) |
+| Evergreen | ✅ (community) |
+| ALMA, Symphony, Polaris | SIP2 v2.0 compliant — should work |
 
 ---
 
 ## Development
 
-### Mock SIP2 Server
+### Mock SIP2 server
 
-No real ILS needed during development:
+Simulates Checkout, Checkin, Patron Information, and Fee responses. No real ILS needed.
 
 ```bash
 cd packages/sip2-client
-npm run mock-server   # TCP server on port 6002
+npm install
+npm run mock-server   # listens on TCP :6002
 ```
 
-### Run all apps
+Mock data includes 2 sample loans and 0 fines. Edit `src/mock/server.ts` to add more scenarios.
+
+### Running a single app
 
 ```bash
-npm install
-npm run dev
+# from repo root
+npm run dev --workspace=apps/kiosk
 ```
+
+---
+
+## Phase Roadmap
+
+| Phase | Scope | Status |
+|---|---|---|
+| **1** | Scaffold, Welcome Screen, i18n (TH/EN), Docker, Mock SIP2 | ✅ Done |
+| **2** | Auth — SIP2 barcode, OIDC-generic, middleware guard | ✅ Done |
+| **3** | Main Menu, transaction screens, session timeout, 5-theme UI | ✅ Done |
+| **3b** | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle | 🔄 Next |
+| **4** | RFID integration — rfid-adapter, ISO 15693, AFI write on borrow/return | 📋 Planned |
+| **5** | Bookdrop app — RFID-only auto-return, staff return log | 📋 Planned |
+| **6** | Workstation app — staff RFID tag programming | 📋 Planned |
+| **7** | First-Run Setup Wizard — web UI to generate `.env` on first boot | 📋 Planned |
+
+Full requirements and design decisions: [`docs/requirements.md`](./docs/requirements.md)
 
 ---
 
@@ -222,14 +295,13 @@ npm run dev
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-**Open Source First** — every contribution must work for any library, any country, without org-specific assumptions in core code.
+**Open Source First** — every feature must work for any library worldwide without org-specific assumptions in core code. Configuration belongs in `.env`, not in source.
 
 ---
 
 ## Credits
 
 - Based on [GallusMax/open-source-self-check](https://github.com/GallusMax/open-source-self-check) (PHP, GPL-3.0)
-- Thai localization originally developed by Tom (ต้อม)
 - Reference deployer: RMUTI (มทร.อีสาน), Thailand
 
 ## License
