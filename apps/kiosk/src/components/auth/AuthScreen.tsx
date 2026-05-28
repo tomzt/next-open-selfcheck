@@ -80,10 +80,7 @@ export default function AuthScreen({
   const isLoading = status === 'loading'
 
   return (
-    <div
-      className="relative w-screen h-screen overflow-hidden flex items-center justify-center"
-      style={{ backgroundColor: 'rgb(var(--kt-bg))' }}
-    >
+    <div className="kt-screen relative w-screen h-screen overflow-hidden flex items-center justify-center">
       {/* Logo — top left */}
       <div className="absolute top-8 left-8 z-10">
         <img

@@ -61,14 +61,11 @@ export default function BorrowScreen() {
   const reset = () => { setBarcode(''); setSuccess(null); setErrorMsg(null); setPhase('idle') }
 
   return (
-    <div
-      className="relative w-screen h-screen overflow-hidden flex flex-col"
-      style={{ backgroundColor: 'rgb(var(--kt-bg))' }}
-    >
+    <div className="kt-screen relative w-screen h-screen overflow-hidden flex flex-col">
       {/* Header */}
       <header
-        className="flex items-center gap-4 px-8 py-5 border-b shrink-0"
-        style={{ backgroundColor: 'rgb(var(--kt-nav-bg))', borderColor: 'rgb(var(--kt-border))' }}
+        className="kt-nav flex items-center gap-4 px-8 py-5 shrink-0"
+        
       >
         <button
           onClick={() => router.push(`/${locale}/menu`)}

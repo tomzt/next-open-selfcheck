@@ -3,30 +3,36 @@
 @tailwind utilities;
 
 /* ── Kiosk Theme System ───────────────────────────────────────
-   Set via NEXT_PUBLIC_KIOSK_THEME env var: light | dark | colorful
-   Each theme maps CSS variables. Components use these vars so a
-   single ENV change switches the entire UI.
+   Set via NEXT_PUBLIC_KIOSK_THEME env var:
+   light | dark | colorful | glass | material
    ─────────────────────────────────────────────────────────── */
 
 /* ── Theme: light (default) — clean white, indigo accent ──── */
 :root,
 [data-kiosk-theme="light"] {
-  --kt-bg:            248 250 252;   /* slate-50  */
-  --kt-surface:       255 255 255;   /* white     */
-  --kt-surface-2:     241 245 249;   /* slate-100 */
-  --kt-border:        226 232 240;   /* slate-200 */
-  --kt-text:          15  23  42;    /* slate-900 */
-  --kt-text-muted:    100 116 139;   /* slate-500 */
-  --kt-primary:       79  70  229;   /* indigo-600*/
-  --kt-primary-hover: 67  56  202;   /* indigo-700*/
+  --kt-bg:            248 250 252;
+  --kt-surface:       255 255 255;
+  --kt-surface-2:     241 245 249;
+  --kt-border:        226 232 240;
+  --kt-text:          15  23  42;
+  --kt-text-muted:    100 116 139;
+  --kt-primary:       79  70  229;
+  --kt-primary-hover: 67  56  202;
   --kt-primary-fg:    255 255 255;
-  --kt-success:       22  163 74;    /* green-600 */
-  --kt-error:         220 38  38;    /* red-600   */
-  --kt-warning:       217 119 6;     /* amber-600 */
-  --kt-welcome-bg-from: 238 242 255; /* indigo-50 */
-  --kt-welcome-bg-to:   224 231 255; /* indigo-100*/
+  --kt-success:       22  163 74;
+  --kt-error:         220 38  38;
+  --kt-warning:       217 119 6;
+  --kt-welcome-bg-from: 238 242 255;
+  --kt-welcome-bg-to:   224 231 255;
   --kt-nav-bg:        255 255 255;
-  --kt-nav-text:      15  23  42;
+  /* card appearance */
+  --kt-surface-opacity:  1;
+  --kt-border-opacity:   1;
+  --kt-blur:             0px;
+  --kt-saturate:         100%;
+  --kt-card-shadow:      0 1px 3px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.06);
+  --kt-radius:           1rem;
+  --kt-btn-radius:       0.75rem;
   --accessibility-btn-bg: 0 0 0 / 0.08;
   --accessibility-btn-border: 0 0 0 / 0.15;
   --accessibility-btn-text: 15 23 42;
@@ -34,22 +40,28 @@
 
 /* ── Theme: dark — slate-950, cyan accent ─────────────────── */
 [data-kiosk-theme="dark"] {
-  --kt-bg:            2   6   23;    /* slate-950 */
-  --kt-surface:       15  23  42;    /* slate-900 */
-  --kt-surface-2:     30  41  59;    /* slate-800 */
-  --kt-border:        51  65  85;    /* slate-700 */
-  --kt-text:          241 245 249;   /* slate-100 */
-  --kt-text-muted:    148 163 184;   /* slate-400 */
-  --kt-primary:       34  211 238;   /* cyan-400  */
-  --kt-primary-hover: 6   182 212;   /* cyan-500  */
-  --kt-primary-fg:    2   6   23;    /* slate-950 */
-  --kt-success:       52  211 153;   /* emerald-400*/
-  --kt-error:         248 113 113;   /* red-400   */
-  --kt-warning:       251 191 36;    /* amber-400 */
+  --kt-bg:            2   6   23;
+  --kt-surface:       15  23  42;
+  --kt-surface-2:     30  41  59;
+  --kt-border:        51  65  85;
+  --kt-text:          241 245 249;
+  --kt-text-muted:    148 163 184;
+  --kt-primary:       34  211 238;
+  --kt-primary-hover: 6   182 212;
+  --kt-primary-fg:    2   6   23;
+  --kt-success:       52  211 153;
+  --kt-error:         248 113 113;
+  --kt-warning:       251 191 36;
   --kt-welcome-bg-from: 2  6  23;
   --kt-welcome-bg-to:   15 23 42;
   --kt-nav-bg:        15  23  42;
-  --kt-nav-text:      241 245 249;
+  --kt-surface-opacity:  1;
+  --kt-border-opacity:   1;
+  --kt-blur:             0px;
+  --kt-saturate:         100%;
+  --kt-card-shadow:      0 1px 3px rgb(0 0 0 / 0.4);
+  --kt-radius:           1rem;
+  --kt-btn-radius:       0.75rem;
   --accessibility-btn-bg: 255 255 255 / 0.1;
   --accessibility-btn-border: 255 255 255 / 0.2;
   --accessibility-btn-text: 241 245 249;
@@ -57,25 +69,137 @@
 
 /* ── Theme: colorful — white bg, per-service colors ──────── */
 [data-kiosk-theme="colorful"] {
-  --kt-bg:            249 250 251;   /* gray-50   */
+  --kt-bg:            249 250 251;
   --kt-surface:       255 255 255;
-  --kt-surface-2:     243 244 246;   /* gray-100  */
-  --kt-border:        229 231 235;   /* gray-200  */
-  --kt-text:          17  24  39;    /* gray-900  */
-  --kt-text-muted:    107 114 128;   /* gray-500  */
-  --kt-primary:       124 58  237;   /* violet-600*/
-  --kt-primary-hover: 109 40  217;   /* violet-700*/
+  --kt-surface-2:     243 244 246;
+  --kt-border:        229 231 235;
+  --kt-text:          17  24  39;
+  --kt-text-muted:    107 114 128;
+  --kt-primary:       124 58  237;
+  --kt-primary-hover: 109 40  217;
   --kt-primary-fg:    255 255 255;
-  --kt-success:       16  185 129;   /* emerald-500*/
-  --kt-error:         239 68  68;    /* red-500   */
-  --kt-warning:       245 158 11;    /* amber-500 */
-  --kt-welcome-bg-from: 245 243 255; /* violet-50 */
-  --kt-welcome-bg-to:   237 233 254; /* violet-100*/
+  --kt-success:       16  185 129;
+  --kt-error:         239 68  68;
+  --kt-warning:       245 158 11;
+  --kt-welcome-bg-from: 245 243 255;
+  --kt-welcome-bg-to:   237 233 254;
   --kt-nav-bg:        255 255 255;
-  --kt-nav-text:      17  24  39;
+  --kt-surface-opacity:  1;
+  --kt-border-opacity:   1;
+  --kt-blur:             0px;
+  --kt-saturate:         100%;
+  --kt-card-shadow:      0 2px 8px rgb(0 0 0 / 0.08);
+  --kt-radius:           1rem;
+  --kt-btn-radius:       0.75rem;
   --accessibility-btn-bg: 0 0 0 / 0.07;
   --accessibility-btn-border: 0 0 0 / 0.12;
   --accessibility-btn-text: 17 24 39;
+}
+
+/* ── Theme: glass — Liquid Glass (Apple visionOS / iOS 26) ── */
+[data-kiosk-theme="glass"] {
+  --kt-bg:            transparent;     /* body uses gradient instead */
+  --kt-surface:       255 255 255;
+  --kt-surface-2:     255 255 255;
+  --kt-border:        255 255 255;
+  --kt-text:          255 255 255;
+  --kt-text-muted:    255 255 255;     /* adjusted per usage below */
+  --kt-primary:       255 255 255;
+  --kt-primary-hover: 240 240 255;
+  --kt-primary-fg:    88  80  236;     /* indigo on white */
+  --kt-success:       52  211 153;
+  --kt-error:         252 165 165;
+  --kt-warning:       253 230 138;
+  --kt-welcome-bg-from: transparent;
+  --kt-welcome-bg-to:   transparent;
+  --kt-nav-bg:        255 255 255;
+  /* glass card appearance */
+  --kt-surface-opacity:  0.12;
+  --kt-border-opacity:   0.28;
+  --kt-blur:             24px;
+  --kt-saturate:         180%;
+  --kt-card-shadow:      0 8px 32px rgb(0 0 0 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.4);
+  --kt-radius:           1.25rem;
+  --kt-btn-radius:       0.875rem;
+  --accessibility-btn-bg: 255 255 255 / 0.15;
+  --accessibility-btn-border: 255 255 255 / 0.35;
+  --accessibility-btn-text: 255 255 255;
+}
+
+/* Glass body background — full-screen gradient */
+html[data-kiosk-theme="glass"],
+html[data-kiosk-theme="glass"] body {
+  background: linear-gradient(
+    140deg,
+    #0d1117 0%,
+    #1a0533 25%,
+    #0c2340 50%,
+    #1a0533 75%,
+    #0d1117 100%
+  ) fixed !important;
+}
+html[data-kiosk-theme="glass"] .kt-screen {
+  background: transparent !important;
+}
+html[data-kiosk-theme="glass"] .kt-nav {
+  background: rgb(255 255 255 / 0.08) !important;
+  backdrop-filter: blur(var(--kt-blur)) saturate(var(--kt-saturate));
+  border-bottom-color: rgb(255 255 255 / 0.15) !important;
+}
+/* Muted text on glass — lighter opacity white */
+html[data-kiosk-theme="glass"] .kt-text-muted {
+  color: rgb(255 255 255 / 0.65) !important;
+}
+/* Input on glass */
+html[data-kiosk-theme="glass"] .kt-input {
+  background: rgb(255 255 255 / 0.1) !important;
+  border-color: rgb(255 255 255 / 0.3) !important;
+  color: #ffffff !important;
+}
+html[data-kiosk-theme="glass"] .kt-input::placeholder {
+  color: rgb(255 255 255 / 0.45) !important;
+}
+html[data-kiosk-theme="glass"] .kt-input:focus {
+  border-color: rgb(255 255 255 / 0.7) !important;
+  box-shadow: 0 0 0 3px rgb(255 255 255 / 0.15) !important;
+}
+/* Ghost button on glass */
+html[data-kiosk-theme="glass"] .kt-btn-ghost {
+  background: rgb(255 255 255 / 0.1) !important;
+  border-color: rgb(255 255 255 / 0.25) !important;
+  color: #ffffff !important;
+}
+
+/* ── Theme: material — Material Design 3 (Material You) ───── */
+[data-kiosk-theme="material"] {
+  --kt-bg:            243 246 250;     /* M3 surface */
+  --kt-surface:       255 255 255;     /* M3 surface-container-high */
+  --kt-surface-2:     228 237 248;     /* M3 surface-container */
+  --kt-border:        193 211 228;     /* M3 outline-variant */
+  --kt-text:          25  29  33;      /* M3 on-surface */
+  --kt-text-muted:    68  76  84;      /* M3 on-surface-variant */
+  --kt-primary:       0   103 157;     /* M3 primary */
+  --kt-primary-hover: 0   84  130;
+  --kt-primary-fg:    255 255 255;
+  --kt-success:       30  131 61;      /* M3 tertiary-ish */
+  --kt-error:         179 38  30;      /* M3 error */
+  --kt-warning:       193 113 0;
+  --kt-welcome-bg-from: 220 238 255;   /* M3 primary-container */
+  --kt-welcome-bg-to:   193 219 248;
+  --kt-nav-bg:        255 255 255;
+  --kt-surface-opacity:  1;
+  --kt-border-opacity:   1;
+  --kt-blur:             0px;
+  --kt-saturate:         100%;
+  /* M3 elevation-1 shadow */
+  --kt-card-shadow:
+    0 1px 2px rgb(0 0 0 / 0.1),
+    0 2px 6px rgb(0 103 157 / 0.12);
+  --kt-radius:           1.75rem;      /* M3 extra-large */
+  --kt-btn-radius:       6.25rem;      /* M3 full pill */
+  --accessibility-btn-bg: 0 103 157 / 0.1;
+  --accessibility-btn-border: 0 103 157 / 0.2;
+  --accessibility-btn-text: 0 103 157;
 }
 
 /* ── Accessibility font-size overrides ───────────────────── */
@@ -84,14 +208,16 @@
 [data-font-size="kiosk-lg"]  { font-size: 19px; }
 [data-font-size="kiosk-xl"]  { font-size: 22px; }
 
-/* High-contrast override (patron accessibility bar) */
+/* High-contrast patron override */
 [data-theme="high-contrast"] {
-  --kt-bg:       0   0   0;
-  --kt-surface:  17  17  17;
-  --kt-text:     255 255 255;
-  --kt-border:   255 255 255;
-  --kt-primary:  255 255 0;
-  --kt-primary-fg: 0 0 0;
+  --kt-bg:            0   0   0;
+  --kt-surface:       17  17  17;
+  --kt-text:          255 255 255;
+  --kt-border:        255 255 255;
+  --kt-primary:       255 255 0;
+  --kt-primary-fg:    0   0   0;
+  --kt-surface-opacity: 1;
+  --kt-blur:          0px;
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
@@ -113,18 +239,33 @@ button, [role="button"] {
   min-width: 3rem;
 }
 
-/* ── Shared component layer ───────────────────────────────── */
+/* ── Component layer ─────────────────────────────────────── */
 @layer components {
-  /* Kiosk surface card */
+
+  /* Page root — full-screen, switchable to transparent for glass */
+  .kt-screen {
+    background-color: rgb(var(--kt-bg));
+  }
+
+  /* Top navigation bar */
+  .kt-nav {
+    background-color: rgb(var(--kt-nav-bg, var(--kt-surface)));
+    border-bottom: 1px solid rgb(var(--kt-border));
+  }
+
+  /* Surface card — supports glass backdrop-filter via CSS vars */
   .kt-card {
-    @apply rounded-2xl border shadow-sm;
-    background-color: rgb(var(--kt-surface));
-    border-color: rgb(var(--kt-border));
+    border-radius: var(--kt-radius);
+    border: 1px solid rgb(var(--kt-border) / var(--kt-border-opacity, 1));
+    background-color: rgb(var(--kt-surface) / var(--kt-surface-opacity, 1));
+    backdrop-filter: blur(var(--kt-blur, 0px)) saturate(var(--kt-saturate, 100%));
+    box-shadow: var(--kt-card-shadow, none);
   }
 
   /* Primary action button */
   .kt-btn-primary {
-    @apply rounded-xl px-6 py-4 font-bold text-xl
+    border-radius: var(--kt-btn-radius);
+    @apply px-6 py-4 font-bold text-xl
            active:scale-95 transition-all duration-150
            disabled:opacity-40 disabled:cursor-not-allowed;
     background-color: rgb(var(--kt-primary));
@@ -136,17 +277,19 @@ button, [role="button"] {
 
   /* Ghost / secondary button */
   .kt-btn-ghost {
-    @apply rounded-xl px-6 py-4 font-bold text-xl
-           border active:scale-95 transition-all duration-150;
-    background-color: rgb(var(--kt-surface-2));
+    border-radius: var(--kt-btn-radius);
+    @apply px-6 py-4 font-bold text-xl border
+           active:scale-95 transition-all duration-150;
+    background-color: rgb(var(--kt-surface-2) / var(--kt-surface-opacity, 1));
     color: rgb(var(--kt-text));
     border-color: rgb(var(--kt-border));
   }
 
   /* Text input */
   .kt-input {
-    @apply w-full rounded-xl px-5 py-4 text-2xl text-center
+    @apply w-full px-5 py-4 text-2xl text-center
            outline-none transition-all duration-150;
+    border-radius: var(--kt-radius);
     background-color: rgb(var(--kt-surface));
     color: rgb(var(--kt-text));
     border: 2px solid rgb(var(--kt-border));
@@ -154,6 +297,11 @@ button, [role="button"] {
   .kt-input:focus {
     border-color: rgb(var(--kt-primary));
     box-shadow: 0 0 0 3px rgb(var(--kt-primary) / 0.15);
+  }
+
+  /* Text color helpers */
+  .kt-text-muted {
+    color: rgb(var(--kt-text-muted));
   }
 
   /* Accessibility bar button */

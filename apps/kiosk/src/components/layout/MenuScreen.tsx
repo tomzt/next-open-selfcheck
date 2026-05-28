@@ -60,18 +60,9 @@ export default function MenuScreen() {
   }
 
   return (
-    <div
-      className="relative w-screen h-screen overflow-hidden flex flex-col"
-      style={{ backgroundColor: 'rgb(var(--kt-bg))' }}
-    >
+    <div className="kt-screen relative w-screen h-screen overflow-hidden flex flex-col">
       {/* Top navigation bar */}
-      <header
-        className="flex items-center justify-between px-8 py-5 border-b shrink-0"
-        style={{
-          backgroundColor: 'rgb(var(--kt-nav-bg))',
-          borderColor: 'rgb(var(--kt-border))',
-        }}
-      >
+      <header className="kt-nav flex items-center justify-between px-8 py-5 shrink-0">
         {/* Logo */}
         <img
           src="/api/config/logo"

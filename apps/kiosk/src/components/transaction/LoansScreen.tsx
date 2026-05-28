@@ -36,9 +36,9 @@ export default function LoansScreen() {
   const accentBg = 'rgb(139 92 246 / 0.1)'
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(var(--kt-bg))' }}>
-      <header className="flex items-center gap-4 px-8 py-5 border-b shrink-0"
-        style={{ backgroundColor: 'rgb(var(--kt-nav-bg))', borderColor: 'rgb(var(--kt-border))' }}>
+    <div className="relative w-screen h-screen overflow-hidden flex flex-col kt-screen">
+      <header className="kt-nav flex items-center gap-4 px-8 py-5 shrink-0"
+        >
         <button onClick={() => router.push(`/${locale}/menu`)}
           className="w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-90"
           style={{ backgroundColor: 'rgb(var(--kt-surface-2))', color: 'rgb(var(--kt-text))' }}>
