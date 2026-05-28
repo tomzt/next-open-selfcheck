@@ -11,6 +11,7 @@
     "db:seed": "node -r ts-node/register src/lib/db/seed.ts"
   },
   "dependencies": {
+    "lucide-react": "^1.16.0",
     "next": "^15.0.0",
     "next-auth": "^4.24.14",
     "next-intl": "^3.0.0",

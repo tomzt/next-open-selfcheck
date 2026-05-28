@@ -9,5 +9,10 @@
     "build": "tsc",
     "mock-server": "ts-node src/mock/server.ts",
     "lint": "eslint src/"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
   }
 }
