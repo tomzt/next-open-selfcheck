@@ -2,84 +2,172 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── CSS Variables — theme tokens ─────────────────────────── */
-:root {
-  --color-primary: 37 99 235;           /* blue-600 — overridden by Setup Wizard */
-  --color-primary-foreground: 255 255 255;
+/* ── Kiosk Theme System ───────────────────────────────────────
+   Set via NEXT_PUBLIC_KIOSK_THEME env var: light | dark | colorful
+   Each theme maps CSS variables. Components use these vars so a
+   single ENV change switches the entire UI.
+   ─────────────────────────────────────────────────────────── */
 
-  /* Light theme (default) */
-  --background: 255 255 255;
-  --foreground: 15 23 42;
-  --muted: 241 245 249;
-  --muted-foreground: 100 116 139;
-  --border: 226 232 240;
+/* ── Theme: light (default) — clean white, indigo accent ──── */
+:root,
+[data-kiosk-theme="light"] {
+  --kt-bg:            248 250 252;   /* slate-50  */
+  --kt-surface:       255 255 255;   /* white     */
+  --kt-surface-2:     241 245 249;   /* slate-100 */
+  --kt-border:        226 232 240;   /* slate-200 */
+  --kt-text:          15  23  42;    /* slate-900 */
+  --kt-text-muted:    100 116 139;   /* slate-500 */
+  --kt-primary:       79  70  229;   /* indigo-600*/
+  --kt-primary-hover: 67  56  202;   /* indigo-700*/
+  --kt-primary-fg:    255 255 255;
+  --kt-success:       22  163 74;    /* green-600 */
+  --kt-error:         220 38  38;    /* red-600   */
+  --kt-warning:       217 119 6;     /* amber-600 */
+  --kt-welcome-bg-from: 238 242 255; /* indigo-50 */
+  --kt-welcome-bg-to:   224 231 255; /* indigo-100*/
+  --kt-nav-bg:        255 255 255;
+  --kt-nav-text:      15  23  42;
+  --accessibility-btn-bg: 0 0 0 / 0.08;
+  --accessibility-btn-border: 0 0 0 / 0.15;
+  --accessibility-btn-text: 15 23 42;
 }
 
-/* Dark theme */
-[data-theme="dark"],
-.dark {
-  --background: 15 23 42;
-  --foreground: 241 245 249;
-  --muted: 30 41 59;
-  --muted-foreground: 148 163 184;
-  --border: 51 65 85;
+/* ── Theme: dark — slate-950, cyan accent ─────────────────── */
+[data-kiosk-theme="dark"] {
+  --kt-bg:            2   6   23;    /* slate-950 */
+  --kt-surface:       15  23  42;    /* slate-900 */
+  --kt-surface-2:     30  41  59;    /* slate-800 */
+  --kt-border:        51  65  85;    /* slate-700 */
+  --kt-text:          241 245 249;   /* slate-100 */
+  --kt-text-muted:    148 163 184;   /* slate-400 */
+  --kt-primary:       34  211 238;   /* cyan-400  */
+  --kt-primary-hover: 6   182 212;   /* cyan-500  */
+  --kt-primary-fg:    2   6   23;    /* slate-950 */
+  --kt-success:       52  211 153;   /* emerald-400*/
+  --kt-error:         248 113 113;   /* red-400   */
+  --kt-warning:       251 191 36;    /* amber-400 */
+  --kt-welcome-bg-from: 2  6  23;
+  --kt-welcome-bg-to:   15 23 42;
+  --kt-nav-bg:        15  23  42;
+  --kt-nav-text:      241 245 249;
+  --accessibility-btn-bg: 255 255 255 / 0.1;
+  --accessibility-btn-border: 255 255 255 / 0.2;
+  --accessibility-btn-text: 241 245 249;
 }
 
-/* High contrast theme */
-[data-theme="high-contrast"],
-.high-contrast {
-  --background: 0 0 0;
-  --foreground: 255 255 255;
-  --muted: 30 30 30;
-  --muted-foreground: 200 200 200;
-  --border: 255 255 255;
-  --color-primary: 255 255 0;
-  --color-primary-foreground: 0 0 0;
+/* ── Theme: colorful — white bg, per-service colors ──────── */
+[data-kiosk-theme="colorful"] {
+  --kt-bg:            249 250 251;   /* gray-50   */
+  --kt-surface:       255 255 255;
+  --kt-surface-2:     243 244 246;   /* gray-100  */
+  --kt-border:        229 231 235;   /* gray-200  */
+  --kt-text:          17  24  39;    /* gray-900  */
+  --kt-text-muted:    107 114 128;   /* gray-500  */
+  --kt-primary:       124 58  237;   /* violet-600*/
+  --kt-primary-hover: 109 40  217;   /* violet-700*/
+  --kt-primary-fg:    255 255 255;
+  --kt-success:       16  185 129;   /* emerald-500*/
+  --kt-error:         239 68  68;    /* red-500   */
+  --kt-warning:       245 158 11;    /* amber-500 */
+  --kt-welcome-bg-from: 245 243 255; /* violet-50 */
+  --kt-welcome-bg-to:   237 233 254; /* violet-100*/
+  --kt-nav-bg:        255 255 255;
+  --kt-nav-text:      17  24  39;
+  --accessibility-btn-bg: 0 0 0 / 0.07;
+  --accessibility-btn-border: 0 0 0 / 0.12;
+  --accessibility-btn-text: 17 24 39;
 }
 
-/* ── Base styles ──────────────────────────────────────────── */
-body {
-  background-color: rgb(var(--background));
-  color: rgb(var(--foreground));
+/* ── Accessibility font-size overrides ───────────────────── */
+[data-font-size="kiosk-sm"]  { font-size: 14px; }
+[data-font-size="kiosk-md"]  { font-size: 16px; }
+[data-font-size="kiosk-lg"]  { font-size: 19px; }
+[data-font-size="kiosk-xl"]  { font-size: 22px; }
+
+/* High-contrast override (patron accessibility bar) */
+[data-theme="high-contrast"] {
+  --kt-bg:       0   0   0;
+  --kt-surface:  17  17  17;
+  --kt-text:     255 255 255;
+  --kt-border:   255 255 255;
+  --kt-primary:  255 255 0;
+  --kt-primary-fg: 0 0 0;
 }
 
-/* ── Kiosk-specific ───────────────────────────────────────── */
-
-/* Full-screen kiosk — hide scrollbars */
+/* ── Base ─────────────────────────────────────────────────── */
 html, body {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
+  background-color: rgb(var(--kt-bg));
+  color: rgb(var(--kt-text));
 }
 
-/* Touch targets — minimum 48px */
-button, [role="button"] {
-  min-height: 3rem;
-  min-width: 3rem;
-}
-
-/* Disable text selection in kiosk mode */
 * {
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* ── Accessibility bar ────────────────────────────────────── */
+button, [role="button"] {
+  min-height: 3rem;
+  min-width: 3rem;
+}
+
+/* ── Shared component layer ───────────────────────────────── */
 @layer components {
+  /* Kiosk surface card */
+  .kt-card {
+    @apply rounded-2xl border shadow-sm;
+    background-color: rgb(var(--kt-surface));
+    border-color: rgb(var(--kt-border));
+  }
+
+  /* Primary action button */
+  .kt-btn-primary {
+    @apply rounded-xl px-6 py-4 font-bold text-xl
+           active:scale-95 transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
+    background-color: rgb(var(--kt-primary));
+    color: rgb(var(--kt-primary-fg));
+  }
+  .kt-btn-primary:not(:disabled):hover {
+    background-color: rgb(var(--kt-primary-hover));
+  }
+
+  /* Ghost / secondary button */
+  .kt-btn-ghost {
+    @apply rounded-xl px-6 py-4 font-bold text-xl
+           border active:scale-95 transition-all duration-150;
+    background-color: rgb(var(--kt-surface-2));
+    color: rgb(var(--kt-text));
+    border-color: rgb(var(--kt-border));
+  }
+
+  /* Text input */
+  .kt-input {
+    @apply w-full rounded-xl px-5 py-4 text-2xl text-center
+           outline-none transition-all duration-150;
+    background-color: rgb(var(--kt-surface));
+    color: rgb(var(--kt-text));
+    border: 2px solid rgb(var(--kt-border));
+  }
+  .kt-input:focus {
+    border-color: rgb(var(--kt-primary));
+    box-shadow: 0 0 0 3px rgb(var(--kt-primary) / 0.15);
+  }
+
+  /* Accessibility bar button */
   .accessibility-btn {
     @apply flex items-center justify-center
            w-12 h-12 rounded-full
-           bg-black/30 backdrop-blur-sm
-           text-white border border-white/20
-           hover:bg-black/50 active:scale-95
-           transition-all duration-150
-           text-lg;
+           active:scale-95 transition-all duration-150 text-lg;
+    background-color: rgb(var(--accessibility-btn-bg));
+    border: 1px solid rgb(var(--accessibility-btn-border));
+    color: rgb(var(--accessibility-btn-text));
+    backdrop-filter: blur(8px);
   }
 
-  /* Dot indicator — shown when setting differs from default */
   .changed-dot {
-    @apply absolute -top-1 -right-1
-           w-3 h-3 rounded-full
-           bg-yellow-400 border-2 border-black/20;
+    @apply absolute -top-1 -right-1 w-3 h-3 rounded-full bg-yellow-400;
   }
 }

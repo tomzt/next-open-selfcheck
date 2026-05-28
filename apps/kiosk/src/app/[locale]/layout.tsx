@@ -5,6 +5,7 @@ import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { locales } from '../../../i18n'
 import Providers from '@/components/Providers'
+import { kioskTheme } from '@/lib/theme'
 import '../globals.css'
 
 export const metadata: Metadata = {
@@ -26,8 +27,8 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   const messages = await getMessages()
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+    <html lang={locale} data-kiosk-theme={kioskTheme} suppressHydrationWarning>
+      <body className="antialiased">
         <Providers>
           <NextIntlClientProvider messages={messages}>
             {children}

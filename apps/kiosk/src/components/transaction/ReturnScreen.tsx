@@ -1,20 +1,16 @@
 'use client'
 // SPDX-License-Identifier: GPL-3.0-or-later
-// ReturnScreen — patron scans item barcode → SIP2 checkin → result
+// ReturnScreen — scan barcode → SIP2 checkin → result
 
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { CornerDownLeft, ScanLine, CheckCircle2, XCircle, AlertTriangle, ArrowLeft } from 'lucide-react'
 import AccessibilityBar from '@/components/ui/AccessibilityBar'
 
 type Phase = 'idle' | 'loading' | 'success' | 'error'
-
-interface SuccessData {
-  title: string | null
-  itemBarcode: string
-  alert: boolean
-}
+interface SuccessData { title: string | null; itemBarcode: string; alert: boolean }
 
 export default function ReturnScreen() {
   const t = useTranslations('transaction.return')
@@ -27,31 +23,21 @@ export default function ReturnScreen() {
   const [barcode, setBarcode] = useState('')
   const [success, setSuccess] = useState<SuccessData | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    if (phase === 'idle') inputRef.current?.focus()
-  }, [phase])
+  useEffect(() => { if (phase === 'idle') inputRef.current?.focus() }, [phase])
 
   const handleScan = async (scanned: string) => {
     if (!scanned.trim() || phase === 'loading') return
     setPhase('loading')
-
     try {
       const res = await fetch('/api/sip2/checkin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemBarcode: scanned.trim() }),
       })
-
-      if (res.status === 401) {
-        router.replace(`/${locale}/auth`)
-        return
-      }
-
+      if (res.status === 401) { router.replace(`/${locale}/auth`); return }
       const data = await res.json()
-
       if (data.ok) {
         setSuccess({ title: data.title, itemBarcode: data.itemBarcode, alert: data.alert })
         setPhase('success')
@@ -65,126 +51,99 @@ export default function ReturnScreen() {
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleScan(barcode)
-    }
-  }
+  const reset = () => { setBarcode(''); setSuccess(null); setErrorMsg(null); setPhase('idle') }
 
-  const handleReturnAnother = () => {
-    setBarcode('')
-    setSuccess(null)
-    setErrorMsg(null)
-    setPhase('idle')
-  }
-
-  const handleDone = () => {
-    router.push(`/${locale}/menu`)
-  }
+  // Emerald for return
+  const accentColor = 'rgb(16 185 129)'
+  const accentBg = 'rgb(16 185 129 / 0.1)'
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 px-8">
+    <div className="relative w-screen h-screen overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(var(--kt-bg))' }}>
+      <header className="flex items-center gap-4 px-8 py-5 border-b shrink-0"
+        style={{ backgroundColor: 'rgb(var(--kt-nav-bg))', borderColor: 'rgb(var(--kt-border))' }}>
+        <button onClick={() => router.push(`/${locale}/menu`)}
+          className="w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-90"
+          style={{ backgroundColor: 'rgb(var(--kt-surface-2))', color: 'rgb(var(--kt-text))' }}>
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div className="flex items-center gap-3">
+          <CornerDownLeft className="w-6 h-6" style={{ color: accentColor }} />
+          <h1 className="text-2xl font-bold" style={{ color: 'rgb(var(--kt-text))' }}>{t('title')}</h1>
+        </div>
+      </header>
 
-      {/* Back button */}
-      <button
-        onClick={handleDone}
-        className="absolute top-6 left-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white text-lg transition-colors"
-      >
-        ← {tc('back')}
-      </button>
+      <div className="flex-1 flex items-center justify-center px-8 pb-8">
+        <div className="w-full max-w-md animate-fade-in">
 
-      <div className="w-full max-w-lg animate-fade-in">
-        {/* Idle — scan input */}
-        {phase === 'idle' && (
-          <div className="text-center">
-            <div className="text-7xl mb-6">↩️</div>
-            <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">{t('title')}</h1>
-            <p className="text-lg text-slate-500 dark:text-slate-400 mb-8">{t('instruction')}</p>
-            <input
-              ref={inputRef}
-              type="text"
-              value={barcode}
-              onChange={(e) => setBarcode(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              className="w-full px-5 py-5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-2xl text-center focus:outline-none focus:border-emerald-500 transition-colors"
-              placeholder="_ _ _ _ _ _ _ _"
-            />
-          </div>
-        )}
-
-        {/* Loading */}
-        {phase === 'loading' && (
-          <div className="text-center">
-            <div className="text-7xl mb-6 animate-pulse">⏳</div>
-            <p className="text-2xl text-slate-600 dark:text-slate-300">{t('scanning')}</p>
-          </div>
-        )}
-
-        {/* Success */}
-        {phase === 'success' && success && (
-          <div className="text-center">
-            <div className="text-7xl mb-6">✅</div>
-            <h2 className="text-3xl font-bold text-emerald-600 mb-3">{t('success')}</h2>
-            {success.title && (
-              <p className="text-xl text-slate-700 dark:text-slate-200 font-medium mb-2">
-                {success.title}
-              </p>
-            )}
-            {success.alert && (
-              <p className="text-base text-amber-600 dark:text-amber-400 mb-4">
-                {tc('contact_staff')}
-              </p>
-            )}
-            <div className="flex gap-4 mt-6">
-              <button
-                onClick={handleReturnAnother}
-                className="flex-1 py-4 rounded-xl bg-emerald-600 text-white text-xl font-bold hover:bg-emerald-500 active:scale-95 transition-all"
-              >
-                {t('add_more')}
-              </button>
-              <button
-                onClick={handleDone}
-                className="flex-1 py-4 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white text-xl font-bold hover:opacity-90 active:scale-95 transition-all"
-              >
-                {t('done')}
-              </button>
+          {phase === 'idle' && (
+            <div className="text-center">
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: accentBg }}>
+                <ScanLine className="w-12 h-12" style={{ color: accentColor }} />
+              </div>
+              <p className="text-lg mb-6" style={{ color: 'rgb(var(--kt-text-muted))' }}>{t('instruction')}</p>
+              <input
+                ref={inputRef}
+                type="text"
+                value={barcode}
+                onChange={(e) => setBarcode(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleScan(barcode)}
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                className="kt-input"
+                placeholder="_ _ _ _ _ _ _ _"
+              />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Error */}
-        {phase === 'error' && (
-          <div className="text-center">
-            <div className="text-7xl mb-6">❌</div>
-            <h2 className="text-3xl font-bold text-red-500 mb-3">{t('failed')}</h2>
-            {errorMsg && (
-              <p className="text-lg text-slate-500 dark:text-slate-400 mb-8">{errorMsg}</p>
-            )}
-            <div className="flex gap-4">
-              <button
-                onClick={handleReturnAnother}
-                className="flex-1 py-4 rounded-xl bg-emerald-600 text-white text-xl font-bold hover:bg-emerald-500 active:scale-95 transition-all"
-              >
-                {tc('retry')}
-              </button>
-              <button
-                onClick={handleDone}
-                className="flex-1 py-4 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white text-xl font-bold hover:opacity-90 active:scale-95 transition-all"
-              >
-                {t('done')}
-              </button>
+          {phase === 'loading' && (
+            <div className="text-center">
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse" style={{ backgroundColor: accentBg }}>
+                <ScanLine className="w-12 h-12" style={{ color: accentColor }} />
+              </div>
+              <p className="text-xl" style={{ color: 'rgb(var(--kt-text-muted))' }}>{t('scanning')}</p>
             </div>
-          </div>
-        )}
+          )}
+
+          {phase === 'success' && success && (
+            <div className="text-center">
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: 'rgb(var(--kt-success) / 0.1)' }}>
+                <CheckCircle2 className="w-12 h-12" style={{ color: 'rgb(var(--kt-success))' }} />
+              </div>
+              <h2 className="text-2xl font-bold mb-2" style={{ color: 'rgb(var(--kt-success))' }}>{t('success')}</h2>
+              {success.title && <p className="text-lg font-medium mb-1" style={{ color: 'rgb(var(--kt-text))' }}>{success.title}</p>}
+              {success.alert && (
+                <div className="flex items-center justify-center gap-2 mt-3 mb-2 px-4 py-3 rounded-xl"
+                  style={{ backgroundColor: 'rgb(var(--kt-warning) / 0.1)', color: 'rgb(var(--kt-warning))' }}>
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span className="text-sm font-medium">{tc('contact_staff')}</span>
+                </div>
+              )}
+              <div className="flex gap-3 mt-6">
+                <button onClick={reset} className="kt-btn-primary flex-1" style={{ backgroundColor: accentColor }}>{t('add_more')}</button>
+                <button onClick={() => router.push(`/${locale}/menu`)} className="kt-btn-ghost flex-1">{t('done')}</button>
+              </div>
+            </div>
+          )}
+
+          {phase === 'error' && (
+            <div className="text-center">
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: 'rgb(var(--kt-error) / 0.1)' }}>
+                <XCircle className="w-12 h-12" style={{ color: 'rgb(var(--kt-error))' }} />
+              </div>
+              <h2 className="text-2xl font-bold mb-2" style={{ color: 'rgb(var(--kt-error))' }}>{t('failed')}</h2>
+              {errorMsg && <p className="text-base mb-8" style={{ color: 'rgb(var(--kt-text-muted))' }}>{errorMsg}</p>}
+              <div className="flex gap-3">
+                <button onClick={reset} className="kt-btn-primary flex-1" style={{ backgroundColor: accentColor }}>{tc('retry')}</button>
+                <button onClick={() => router.push(`/${locale}/menu`)} className="kt-btn-ghost flex-1">{t('done')}</button>
+              </div>
+            </div>
+          )}
+
+        </div>
       </div>
 
-      <div className="absolute bottom-6 right-6 z-20">
-        <AccessibilityBar />
-      </div>
+      <div className="absolute bottom-6 right-6 z-20"><AccessibilityBar /></div>
     </div>
   )
 }

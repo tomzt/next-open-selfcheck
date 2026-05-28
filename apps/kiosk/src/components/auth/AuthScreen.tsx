@@ -1,12 +1,12 @@
 'use client'
 // SPDX-License-Identifier: GPL-3.0-or-later
-// AuthScreen — patron authentication UI
-// Supports barcode/QR scan (HID keyboard), manual entry, and OIDC SSO.
+// AuthScreen — patron sign-in via barcode/QR scan or OIDC SSO
 
 import { signIn } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { CreditCard, Lock, LogIn } from 'lucide-react'
 import AccessibilityBar from '@/components/ui/AccessibilityBar'
 import type { AuthMode } from '@/lib/auth'
 
@@ -35,7 +35,6 @@ export default function AuthScreen({
   const patronIdRef = useRef<HTMLInputElement>(null)
   const pinRef = useRef<HTMLInputElement>(null)
 
-  // Auto-focus: barcode scanners send keystrokes here
   useEffect(() => {
     patronIdRef.current?.focus()
   }, [])
@@ -64,15 +63,11 @@ export default function AuthScreen({
     }
   }
 
-  // HID barcode scanner sends Enter after the card number
   const handlePatronIdKey = (e: React.KeyboardEvent) => {
     if (e.key !== 'Enter') return
     e.preventDefault()
-    if (pinRequired) {
-      pinRef.current?.focus()
-    } else {
-      handleBarcodeSubmit()
-    }
+    if (pinRequired) pinRef.current?.focus()
+    else handleBarcodeSubmit()
   }
 
   const handleOidcSignIn = () => {
@@ -85,17 +80,17 @@ export default function AuthScreen({
   const isLoading = status === 'loading'
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-slate-900 flex items-center justify-center">
-      {/* Subtle background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950" />
-
+    <div
+      className="relative w-screen h-screen overflow-hidden flex items-center justify-center"
+      style={{ backgroundColor: 'rgb(var(--kt-bg))' }}
+    >
       {/* Logo — top left */}
-      <div className="absolute top-6 left-6 z-10">
+      <div className="absolute top-8 left-8 z-10">
         <img
           src="/api/config/logo"
           alt="Library logo"
-          width={120}
-          height={60}
+          width={110}
+          height={52}
           className="object-contain"
           onError={(e) => {
             ;(e.target as HTMLImageElement).style.display = 'none'
@@ -104,21 +99,31 @@ export default function AuthScreen({
       </div>
 
       {/* Auth card */}
-      <div className="relative z-10 w-full max-w-md mx-4">
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-10 shadow-2xl border border-white/20">
-          <h1 className="text-white text-3xl font-bold text-center mb-2">
-            {t('title')}
-          </h1>
-          <p className="text-white/60 text-center mb-8 text-lg">
-            {t('subtitle')}
-          </p>
+      <div className="w-full max-w-md mx-6">
+        <div className="kt-card p-10 shadow-xl">
+          {/* Header */}
+          <div className="flex flex-col items-center mb-8">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
+              style={{ backgroundColor: 'rgb(var(--kt-primary) / 0.1)' }}
+            >
+              <CreditCard className="w-8 h-8" style={{ color: 'rgb(var(--kt-primary))' }} />
+            </div>
+            <h1 className="text-3xl font-bold text-center" style={{ color: 'rgb(var(--kt-text))' }}>
+              {t('title')}
+            </h1>
+            <p className="text-base text-center mt-1" style={{ color: 'rgb(var(--kt-text-muted))' }}>
+              {t('subtitle')}
+            </p>
+          </div>
 
           {showBarcode && (
             <form onSubmit={handleBarcodeSubmit} className="space-y-4">
               <div>
                 <label
                   htmlFor="patronId"
-                  className="block text-white/70 text-sm mb-2"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: 'rgb(var(--kt-text-muted))' }}
                 >
                   {t('card_number')}
                 </label>
@@ -134,7 +139,7 @@ export default function AuthScreen({
                   autoCorrect="off"
                   spellCheck={false}
                   inputMode="numeric"
-                  className="w-full px-4 py-4 rounded-xl bg-white/15 border border-white/25 text-white text-xl placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/40 disabled:opacity-50 transition-colors"
+                  className="kt-input disabled:opacity-50"
                   placeholder={t('scan_or_type')}
                 />
               </div>
@@ -143,8 +148,10 @@ export default function AuthScreen({
                 <div>
                   <label
                     htmlFor="pin"
-                    className="block text-white/70 text-sm mb-2"
+                    className="flex items-center gap-1.5 text-sm font-medium mb-2"
+                    style={{ color: 'rgb(var(--kt-text-muted))' }}
                   >
+                    <Lock className="w-3.5 h-3.5" />
                     {t('pin')}
                   </label>
                   <input
@@ -153,41 +160,47 @@ export default function AuthScreen({
                     type="password"
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === 'Enter' && handleBarcodeSubmit()
-                    }
+                    onKeyDown={(e) => e.key === 'Enter' && handleBarcodeSubmit()}
                     disabled={isLoading}
                     autoComplete="off"
                     inputMode="numeric"
-                    className="w-full px-4 py-4 rounded-xl bg-white/15 border border-white/25 text-white text-xl placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50 transition-colors"
+                    className="kt-input disabled:opacity-50"
                   />
                 </div>
               )}
 
               {status === 'error' && (
-                <p
+                <div
                   role="alert"
-                  className="text-red-300 text-center text-sm py-1"
+                  className="rounded-xl px-4 py-3 text-center text-sm font-medium"
+                  style={{ backgroundColor: 'rgb(var(--kt-error) / 0.08)', color: 'rgb(var(--kt-error))' }}
                 >
                   {t('invalid_credentials')}
-                </p>
+                </div>
               )}
 
               <button
                 type="submit"
                 disabled={isLoading || !patronId.trim()}
-                className="w-full py-4 rounded-xl bg-white text-slate-900 text-xl font-bold hover:bg-white/90 active:bg-white/80 disabled:opacity-40 disabled:cursor-not-allowed transition-colors mt-2"
+                className="kt-btn-primary w-full flex items-center justify-center gap-2 mt-2"
               >
-                {isLoading ? t('logging_in') : t('sign_in')}
+                {isLoading ? (
+                  <span className="animate-pulse">{t('logging_in')}</span>
+                ) : (
+                  <>
+                    <LogIn className="w-5 h-5" />
+                    {t('sign_in')}
+                  </>
+                )}
               </button>
             </form>
           )}
 
           {showBarcode && showOidc && (
             <div className="flex items-center gap-3 my-6">
-              <div className="flex-1 h-px bg-white/20" />
-              <span className="text-white/40 text-sm">{t('or')}</span>
-              <div className="flex-1 h-px bg-white/20" />
+              <div className="flex-1 h-px" style={{ backgroundColor: 'rgb(var(--kt-border))' }} />
+              <span className="text-sm" style={{ color: 'rgb(var(--kt-text-muted))' }}>{t('or')}</span>
+              <div className="flex-1 h-px" style={{ backgroundColor: 'rgb(var(--kt-border))' }} />
             </div>
           )}
 
@@ -195,18 +208,15 @@ export default function AuthScreen({
             <button
               onClick={handleOidcSignIn}
               disabled={isLoading}
-              className="w-full py-4 rounded-xl bg-indigo-600 text-white text-xl font-bold hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="kt-btn-ghost w-full flex items-center justify-center gap-2"
             >
-              {isLoading
-                ? t('logging_in')
-                : t('login_with', { provider: oidcProviderName })}
+              {isLoading ? t('logging_in') : t('login_with', { provider: oidcProviderName })}
             </button>
           )}
         </div>
       </div>
 
-      {/* Accessibility bar — bottom right */}
-      <div className="absolute bottom-6 right-6 z-20">
+      <div className="absolute bottom-8 right-8 z-20">
         <AccessibilityBar />
       </div>
     </div>
