@@ -13,13 +13,24 @@ import { authenticatePatron } from './sip2-patron'
 export type AuthMode = 'barcode' | 'oidc' | 'both'
 export const authMode = (process.env.AUTH_MODE ?? 'barcode') as AuthMode
 
-// Generic OIDC provider — no vendor lock-in
+// Generic OIDC provider — no vendor lock-in.
+//
+// patron ID mapping: the claim that carries the library patron identifier
+// varies by institution. Keycloak often exposes it as `preferred_username`
+// (the login username = student/staff ID), but some IdPs use `student_id`,
+// `library_barcode`, `employee_number`, etc. The claim is configurable via
+// OIDC_PATRON_ID_CLAIM (default: preferred_username). It must resolve to the
+// same identifier the ILS expects in SIP2 message 63's AA field.
+//
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildOidcProvider(): any | null {
   const issuer = process.env.OIDC_ISSUER
   const clientId = process.env.OIDC_CLIENT_ID
   const clientSecret = process.env.OIDC_CLIENT_SECRET
   if (!issuer || !clientId || !clientSecret) return null
+
+  const patronIdClaim =
+    process.env.OIDC_PATRON_ID_CLAIM?.trim() || 'preferred_username'
 
   return {
     id: 'oidc',
@@ -32,8 +43,12 @@ function buildOidcProvider(): any | null {
     idToken: true,
     checks: ['pkce', 'state'],
     profile(profile: Record<string, string>) {
+      // The patron identifier — falls back to sub only if the configured
+      // claim is entirely absent (degraded mode; deployer likely misconfigured).
+      const patronId = profile[patronIdClaim] ?? profile['sub']
+
       return {
-        id: profile['sub'],
+        id: patronId,
         name: profile['name'] ?? profile['preferred_username'] ?? '',
         email: profile['email'] ?? null,
       }

@@ -11,9 +11,10 @@ import AccessibilityBar from '@/components/ui/AccessibilityBar'
 interface WelcomeScreenProps {
   ctaText: string
   ctaSubText: string
+  libraryName: string
 }
 
-export default function WelcomeScreen({ ctaText, ctaSubText }: WelcomeScreenProps) {
+export default function WelcomeScreen({ ctaText, ctaSubText, libraryName }: WelcomeScreenProps) {
   const router = useRouter()
   const locale = useLocale()
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -52,7 +53,7 @@ export default function WelcomeScreen({ ctaText, ctaSubText }: WelcomeScreenProp
       <div className="absolute top-8 left-8 z-10">
         <img
           src="/api/config/logo"
-          alt="Library logo"
+          alt={`${libraryName} logo`}
           width={120}
           height={56}
           className="object-contain"

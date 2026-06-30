@@ -35,6 +35,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# AI agent local state (contains secrets, paths — never commit)
+.claude/
+
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts

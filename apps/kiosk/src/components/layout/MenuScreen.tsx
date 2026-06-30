@@ -48,8 +48,13 @@ const MENU_ITEMS: MenuItem[] = [
   },
 ]
 
-export default function MenuScreen() {
+interface MenuScreenProps {
+  libraryName: string
+}
+
+export default function MenuScreen({ libraryName }: MenuScreenProps) {
   const t = useTranslations('menu')
+  const tAuth = useTranslations('auth')
   const locale = useLocale()
   const router = useRouter()
   const { data: session } = useSession()

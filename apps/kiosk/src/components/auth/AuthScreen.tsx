@@ -15,6 +15,7 @@ interface AuthScreenProps {
   pinRequired: boolean
   oidcProviderName: string
   locale: string
+  libraryName: string
 }
 
 type Status = 'idle' | 'loading' | 'error'
@@ -24,6 +25,7 @@ export default function AuthScreen({
   pinRequired,
   oidcProviderName,
   locale,
+  libraryName,
 }: AuthScreenProps) {
   const t = useTranslations('auth')
   const router = useRouter()
@@ -85,7 +87,7 @@ export default function AuthScreen({
       <div className="absolute top-8 left-8 z-10">
         <img
           src="/api/config/logo"
-          alt="Library logo"
+          alt={`${libraryName} logo`}
           width={110}
           height={52}
           className="object-contain"

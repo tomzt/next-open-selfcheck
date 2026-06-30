@@ -6,12 +6,23 @@ import { notFound } from 'next/navigation'
 import { locales } from '../../../i18n'
 import Providers from '@/components/Providers'
 import { kioskTheme } from '@/lib/theme'
+import { libraryNameFor } from '@/lib/site-config'
 import '../globals.css'
 
-export const metadata: Metadata = {
-  title: 'Library Self-Check',
-  description: 'Library self-check kiosk',
-  robots: 'noindex, nofollow',
+// Build per-locale metadata with the deployer's library name.
+// Title format: "{Library Name} — Self-Check"
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const libraryName = libraryNameFor(locale)
+  return {
+    title: `${libraryName} — Self-Check`,
+    description: `${libraryName} self-check kiosk`,
+    robots: 'noindex, nofollow',
+  }
 }
 
 interface RootLayoutProps {
