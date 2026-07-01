@@ -6,6 +6,7 @@ import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions, authMode } from '@/lib/auth'
 import AuthScreen from '@/components/auth/AuthScreen'
+import { libraryNameFor } from '@/lib/site-config'
 
 interface Props {
   params: Promise<{ locale: string }>
@@ -26,6 +27,7 @@ export default async function AuthPage({ params }: Props) {
       pinRequired={pinRequired}
       oidcProviderName={oidcProviderName}
       locale={locale}
+      libraryName={libraryNameFor(locale)}
     />
   )
 }

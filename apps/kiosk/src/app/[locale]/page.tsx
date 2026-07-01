@@ -6,14 +6,21 @@
 import { useTranslations } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
 import WelcomeScreen from '@/components/layout/WelcomeScreen'
+import { libraryNameFor } from '@/lib/site-config'
 
-export default async function HomePage() {
+interface Props {
+  params: Promise<{ locale: string }>
+}
+
+export default async function HomePage({ params }: Props) {
+  const { locale } = await params
   const t = await getTranslations('welcome')
 
   return (
     <WelcomeScreen
       ctaText={t('cta')}
       ctaSubText={t('cta_sub')}
+      libraryName={libraryNameFor(locale)}
     />
   )
 }

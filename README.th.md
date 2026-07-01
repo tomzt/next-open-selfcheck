@@ -127,6 +127,13 @@ docker compose up -d
 ### ตัวแปรหลัก — Kiosk
 
 ```env
+# Branding & identity — ตั้งค่าสำหรับห้องสมุดของคุณ
+KIOSK_LIBRARY_NAME=                          # แสดงใน <title>, header, ใบเสร็จ
+                                             # (หรือใช้ KIOSK_LIBRARY_NAME_TH / _EN
+                                             #  เพื่อแยกภาษา; ว่างไว้จะใช้ "ห้องสมุด")
+KIOSK_LOGO_URL=                              # ภาพโลโก้ — ดูรายละเอียดที่ "Branding" ด้านล่าง
+KIOSK_WELCOME_VIDEO_URL=                     # วิดีโอพื้นหลังหน้าต้อนรับ
+
 # SIP2 connection
 SIP2_HOST=192.168.1.100
 SIP2_PORT=6002
@@ -143,6 +150,10 @@ OIDC_ISSUER=https://keycloak.example.com/realms/library
 OIDC_CLIENT_ID=
 OIDC_CLIENT_SECRET=
 OIDC_PROVIDER_NAME=ระบบ SSO สถาบัน
+# OIDC claim ใดที่เก็บเลขประจำตัวผู้ใช้ที่ ILS ต้องการ (ฟิลด์ AA ของ SIP2)?
+# default: preferred_username (username ของ Keycloak = รหัสนักศึกษา/บุคลากร)
+# อาจใช้: student_id, library_barcode, employee_number — แล้วแต่ IdP ของคุณ
+OIDC_PATRON_ID_CLAIM=preferred_username
 
 # UI
 NEXT_PUBLIC_KIOSK_THEME=light        # light | dark | colorful | glass | material
@@ -167,6 +178,18 @@ RFID_DRIVER=webserial
 ```
 
 ดูรายละเอียดครบได้ที่ [`apps/kiosk/.env.example`](./apps/kiosk/.env.example)
+
+### Branding
+
+ตู้ kiosk **ไม่มีโลโก้หรือชื่อห้องสมุดใดติดมาเลย** — ทุกการ deploy ต้องใส่ของตัวเอง มี 3 วิธีตั้งค่าโลโก้และวิดีโอต้อนรับ (เรียงตามลำดับความสำคัญ):
+
+1. **URL** — ตั้ง `KIOSK_LOGO_URL` / `KIOSK_WELCOME_VIDEO_URL` เป็น URL แบบ `https://…` หรือพาธ `/path` (เสิร์ฟผ่าน redirect)
+2. **ไฟล์ในแพ็กเกจ** — วางไฟล์ใน `apps/kiosk/public/branding/`:
+   - โลโก้: `logo.svg` | `logo.png` | `logo.jpg` | `logo.webp`
+   - วิดีโอ: `welcome.mp4` | `welcome.webm` | `welcome.mov`
+3. **ไม่ใส่** — ปล่อยว่างทั้งคู่ → UI จะซ่อนไม่แสดง (ไม่มีรูปแตก)
+
+ชื่อห้องสมุด (`KIOSK_LIBRARY_NAME`) จะแสดงใน `<title>` และ header ของทุกหน้าจอ หากต้องการแยกภาษา ให้ตั้ง `KIOSK_LIBRARY_NAME_TH` / `KIOSK_LIBRARY_NAME_EN`
 
 ---
 

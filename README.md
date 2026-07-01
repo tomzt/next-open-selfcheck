@@ -127,6 +127,13 @@ All themes share the same component tree — switching is one ENV var + redeploy
 ### Key variables — Kiosk
 
 ```env
+# Branding & identity — set for YOUR library
+KIOSK_LIBRARY_NAME=                          # shown in <title>, header, receipts
+                                             # (also: KIOSK_LIBRARY_NAME_TH / _EN to
+                                             #  localize; blank falls back to "Library")
+KIOSK_LOGO_URL=                              # logo image — see "Branding" below
+KIOSK_WELCOME_VIDEO_URL=                     # welcome-screen background video
+
 # SIP2 connection
 SIP2_HOST=192.168.1.100
 SIP2_PORT=6002
@@ -143,6 +150,10 @@ OIDC_ISSUER=https://keycloak.example.com/realms/library
 OIDC_CLIENT_ID=
 OIDC_CLIENT_SECRET=
 OIDC_PROVIDER_NAME=Institutional SSO
+# Which OIDC claim carries the patron ID the ILS expects (SIP2 AA field)?
+# default: preferred_username (Keycloak login username = student/staff ID)
+# also try: student_id, library_barcode, employee_number — whatever your IdP exposes
+OIDC_PATRON_ID_CLAIM=preferred_username
 
 # UI
 NEXT_PUBLIC_KIOSK_THEME=light       # light | dark | colorful | glass | material
@@ -167,6 +178,18 @@ RFID_DRIVER=webserial
 ```
 
 Full reference: [`apps/kiosk/.env.example`](./apps/kiosk/.env.example)
+
+### Branding
+
+The kiosk shows **no built-in logo or library name** — every deployment supplies its own. There are three ways to provide the logo and welcome video, tried in order:
+
+1. **URL** — set `KIOSK_LOGO_URL` / `KIOSK_WELCOME_VIDEO_URL` to an absolute `https://…` URL or a root-relative `/path` (served via redirect)
+2. **Bundled file** — drop a file in `apps/kiosk/public/branding/`:
+   - logo: `logo.svg` | `logo.png` | `logo.jpg` | `logo.webp`
+   - video: `welcome.mp4` | `welcome.webm` | `welcome.mov`
+3. **Omitted** — leave both unset → the UI hides the element (no broken image)
+
+The library name (`KIOSK_LIBRARY_NAME`) appears in the page `<title>` and the header on every screen. Set `KIOSK_LIBRARY_NAME_TH` / `KIOSK_LIBRARY_NAME_EN` to localize.
 
 ---
 

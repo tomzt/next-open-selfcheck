@@ -71,7 +71,7 @@ export default function MenuScreen({ libraryName }: MenuScreenProps) {
         {/* Logo */}
         <img
           src="/api/config/logo"
-          alt="Library logo"
+          alt={`${libraryName} logo`}
           width={100}
           height={48}
           className="object-contain"
@@ -104,7 +104,7 @@ export default function MenuScreen({ libraryName }: MenuScreenProps) {
             }}
           >
             <LogOut className="w-4 h-4" />
-            {useTranslations('auth')('logout')}
+            {tAuth('logout')}
           </button>
         </div>
       </header>

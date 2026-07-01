@@ -1,0 +1,11 @@
+# Drop your library's branding assets here. Filenames are auto-detected:
+#
+#   Logo:   logo.svg | logo.png | logo.jpg | logo.webp
+#   Video:  welcome.mp4 | welcome.webm | welcome.mov
+#
+# To override the filename or use a remote URL instead, set KIOSK_LOGO_URL /
+# KIOSK_WELCOME_VIDEO_URL in .env. See README → "Branding".
+#
+# NOTE: This folder is committed so the path exists, but the binary assets you
+# drop here should NOT be committed if they are large or org-specific — add
+# patterns to .gitignore as needed (e.g. /apps/kiosk/public/branding/*.*).
