@@ -107,3 +107,30 @@ export function libraryNameFor(locale: string): string {
   const b = getSiteBranding()
   return locale === 'th' ? b.libraryNameTh : b.libraryNameEn
 }
+
+// ── Service toggle ─────────────────────────────────────────────────────────
+// KIOSK_SERVICES lets a deployer disable a menu item without touching code —
+// e.g. a library whose return slot is Bookdrop-only sets
+// KIOSK_SERVICES=borrow,loans,fines to hide "Return" from this kiosk.
+
+export type ServiceRoute = 'borrow' | 'return' | 'loans' | 'fines'
+
+const ALL_SERVICES: ServiceRoute[] = ['borrow', 'return', 'loans', 'fines']
+
+/**
+ * Read KIOSK_SERVICES from ENV. Unset → all services enabled.
+ * Unknown entries are ignored; if nothing valid remains, falls back to all
+ * services rather than locking patrons out entirely on a config typo.
+ */
+export function getEnabledServices(): ServiceRoute[] {
+  const raw = process.env.KIOSK_SERVICES?.trim()
+  if (!raw) return ALL_SERVICES
+
+  const requested = raw.split(',').map((s) => s.trim().toLowerCase())
+  const enabled = ALL_SERVICES.filter((s) => requested.includes(s))
+  return enabled.length > 0 ? enabled : ALL_SERVICES
+}
+
+export function isServiceEnabled(route: ServiceRoute): boolean {
+  return getEnabledServices().includes(route)
+}

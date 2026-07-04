@@ -7,7 +7,11 @@
     "retry": "ลองใหม่",
     "close": "ปิด",
     "back": "ย้อนกลับ",
-    "contact_staff": "ติดต่อเจ้าหน้าที่"
+    "contact_staff": "ติดต่อเจ้าหน้าที่",
+    "remove": "ลบ",
+    "done_scanning": "สแกนเสร็จแล้ว",
+    "back_to_scan": "กลับไปสแกน",
+    "processing": "กำลังดำเนินการ..."
   },
 
   "welcome": {
@@ -49,7 +53,15 @@
       "success_detail": "กำหนดคืน: {dueDate}",
       "failed": "ไม่สามารถยืมหนังสือได้",
       "add_more": "ยืมเพิ่ม",
-      "done": "เสร็จสิ้น"
+      "done": "เสร็จสิ้น",
+      "scan_list_title": "รายการที่สแกน ({count})",
+      "scan_empty": "ยังไม่ได้สแกนรายการใด",
+      "review_title": "ตรวจสอบรายการก่อนยืม",
+      "confirm_all": "ยืนยันการยืมทั้งหมด",
+      "summary_success": "ยืมสำเร็จ {count} รายการ",
+      "summary_partial": "สำเร็จ {success} จาก {total} รายการ",
+      "summary_failed": "ไม่สามารถยืมได้ทั้งหมด",
+      "email_sent": "ส่งสรุปรายการทางอีเมลแล้ว"
     },
     "return": {
       "title": "คืนหนังสือ",
@@ -60,7 +72,15 @@
       "success": "คืนหนังสือสำเร็จ",
       "failed": "ไม่สามารถคืนหนังสือได้",
       "add_more": "คืนเพิ่ม",
-      "done": "เสร็จสิ้น"
+      "done": "เสร็จสิ้น",
+      "scan_list_title": "รายการที่สแกน ({count})",
+      "scan_empty": "ยังไม่ได้สแกนรายการใด",
+      "review_title": "ตรวจสอบรายการก่อนคืน",
+      "confirm_all": "ยืนยันการคืนทั้งหมด",
+      "summary_success": "คืนสำเร็จ {count} รายการ",
+      "summary_partial": "สำเร็จ {success} จาก {total} รายการ",
+      "summary_failed": "ไม่สามารถคืนได้ทั้งหมด",
+      "email_sent": "ส่งสรุปรายการทางอีเมลแล้ว"
     },
     "status": {
       "title": "ตรวจสอบรายการยืม",

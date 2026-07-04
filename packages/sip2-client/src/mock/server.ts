@@ -59,7 +59,7 @@ function patronInfoResponse(patronId: string, summary: string): string {
     `0000` +              // fine items count
     `0000` +              // recall items count
     `0000` +              // unavail holds count
-    `AO|AA${patronId}|AETest Patron|BLY|CQY|`
+    `AO|AA${patronId}|AETest Patron|BEtest.patron@example.com|BLY|CQY|`
 
   if (wantCharged) {
     for (const loan of MOCK_LOANS) {

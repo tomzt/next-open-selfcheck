@@ -208,6 +208,21 @@ export async function getPatronLoans(patronId: string): Promise<LoanItem[]> {
   })
 }
 
+/**
+ * Patron email for receipt delivery (§6.3). Returns null if the ILS has no
+ * email on file for this patron — callers must skip sending silently, not
+ * treat it as an error.
+ */
+export async function getPatronEmail(patronId: string): Promise<string | null> {
+  return withSession(async (s) => {
+    const institution = process.env.SIP2_INSTITUTION ?? 'LIBRARY'
+    s.send(`63000${sipDate()}          AO${institution}|AA${patronId}|AC|`)
+
+    const resp = await s.receive()
+    return parseField(resp, 'BE')
+  })
+}
+
 export async function getPatronFines(patronId: string): Promise<PatronFines> {
   return withSession(async (s) => {
     const institution = process.env.SIP2_INSTITUTION ?? 'LIBRARY'

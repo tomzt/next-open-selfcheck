@@ -7,7 +7,11 @@
     "retry": "Try Again",
     "close": "Close",
     "back": "Back",
-    "contact_staff": "Contact Staff"
+    "contact_staff": "Contact Staff",
+    "remove": "Remove",
+    "done_scanning": "Done Scanning",
+    "back_to_scan": "Back to Scanning",
+    "processing": "Processing..."
   },
 
   "welcome": {
@@ -49,7 +53,15 @@
       "success_detail": "Due date: {dueDate}",
       "failed": "Could Not Borrow Item",
       "add_more": "Borrow Another",
-      "done": "Done"
+      "done": "Done",
+      "scan_list_title": "Scanned Items ({count})",
+      "scan_empty": "No items scanned yet",
+      "review_title": "Review Items to Borrow",
+      "confirm_all": "Confirm Borrow",
+      "summary_success": "{count} items borrowed successfully",
+      "summary_partial": "{success} of {total} succeeded",
+      "summary_failed": "Could not borrow any items",
+      "email_sent": "Receipt emailed to you"
     },
     "return": {
       "title": "Return",
@@ -60,7 +72,15 @@
       "success": "Returned Successfully",
       "failed": "Could Not Return Item",
       "add_more": "Return Another",
-      "done": "Done"
+      "done": "Done",
+      "scan_list_title": "Scanned Items ({count})",
+      "scan_empty": "No items scanned yet",
+      "review_title": "Review Items to Return",
+      "confirm_all": "Confirm Return",
+      "summary_success": "{count} items returned successfully",
+      "summary_partial": "{success} of {total} succeeded",
+      "summary_failed": "Could not return any items",
+      "email_sent": "Receipt emailed to you"
     },
     "status": {
       "title": "My Loans",

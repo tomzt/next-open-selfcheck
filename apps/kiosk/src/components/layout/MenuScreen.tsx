@@ -8,11 +8,12 @@ import { useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { BookOpen, CornerDownLeft, BookCopy, Receipt, LogOut, User } from 'lucide-react'
 import AccessibilityBar from '@/components/ui/AccessibilityBar'
+import type { ServiceRoute } from '@/lib/site-config'
 
 interface MenuItem {
   key: 'borrow' | 'return' | 'check_status' | 'check_fines'
   icon: React.ReactNode
-  route: string
+  route: ServiceRoute
   accentClass: string
   bgVar: string
 }
@@ -50,14 +51,17 @@ const MENU_ITEMS: MenuItem[] = [
 
 interface MenuScreenProps {
   libraryName: string
+  enabledServices: ServiceRoute[]
 }
 
-export default function MenuScreen({ libraryName }: MenuScreenProps) {
+export default function MenuScreen({ libraryName, enabledServices }: MenuScreenProps) {
   const t = useTranslations('menu')
   const tAuth = useTranslations('auth')
   const locale = useLocale()
   const router = useRouter()
   const { data: session } = useSession()
+
+  const visibleItems = MENU_ITEMS.filter((item) => enabledServices.includes(item.route))
 
   const handleSignOut = async () => {
     await signOut({ redirect: false })
@@ -118,7 +122,7 @@ export default function MenuScreen({ libraryName }: MenuScreenProps) {
 
       {/* 2×2 service grid */}
       <div className="flex-1 grid grid-cols-2 gap-5 px-8 pb-8 overflow-hidden">
-        {MENU_ITEMS.map(({ key, icon, route, accentClass }) => (
+        {visibleItems.map(({ key, icon, route, accentClass }) => (
           <button
             key={key}
             onClick={() => router.push(`/${locale}/menu/${route}`)}

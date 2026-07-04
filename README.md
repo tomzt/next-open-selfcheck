@@ -304,8 +304,8 @@ npm run dev --workspace=apps/kiosk
 | **1** | Scaffold, Welcome Screen, i18n (TH/EN), Docker, Mock SIP2 | ✅ Done |
 | **2** | Auth — SIP2 barcode, OIDC-generic, middleware guard | ✅ Done |
 | **3** | Main Menu, transaction screens, session timeout, 5-theme UI | ✅ Done |
-| **3b** | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle | 🔄 Next |
-| **4** | RFID integration — rfid-adapter, ISO 15693, AFI write on borrow/return | 📋 Planned |
+| **3b** | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle | ✅ Done |
+| **4** | RFID integration — rfid-adapter, ISO 15693, AFI write on borrow/return | 🔄 Next |
 | **5** | Bookdrop app — RFID-only auto-return, staff return log | 📋 Planned |
 | **6** | Workstation app — staff RFID tag programming | 📋 Planned |
 | **7** | First-Run Setup Wizard — web UI to generate `.env` on first boot | 📋 Planned |

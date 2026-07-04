@@ -304,8 +304,8 @@ npm run dev --workspace=apps/kiosk
 | **1** | Scaffold, Welcome Screen, i18n (TH/EN), Docker, Mock SIP2 | ✅ เสร็จแล้ว |
 | **2** | Auth — SIP2 barcode, OIDC-generic, middleware guard | ✅ เสร็จแล้ว |
 | **3** | เมนูหลัก, transaction screens, session timeout, UI 5 ธีม | ✅ เสร็จแล้ว |
-| **3b** | Batch scan flow, email ใบเสร็จ, `KIOSK_SERVICES` toggle | 🔄 ถัดไป |
-| **4** | RFID — rfid-adapter, ISO 15693, เขียน AFI ตอนยืม/คืน | 📋 แผน |
+| **3b** | Batch scan flow, email ใบเสร็จ, `KIOSK_SERVICES` toggle | ✅ เสร็จแล้ว |
+| **4** | RFID — rfid-adapter, ISO 15693, เขียน AFI ตอนยืม/คืน | 🔄 ถัดไป |
 | **5** | Bookdrop app — auto-return RFID, log รายการคืน | 📋 แผน |
 | **6** | Workstation app — โปรแกรม RFID Tag | 📋 แผน |
 | **7** | First-Run Setup Wizard — web UI สร้าง `.env` ตอน boot ครั้งแรก | 📋 แผน |
