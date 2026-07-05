@@ -8,7 +8,7 @@ import { authOptions } from '@/lib/auth'
 import { checkinItem } from '@/lib/sip2-client'
 
 const Body = z.object({
-  itemBarcode: z.string().min(1),
+  itemBarcode: z.string().min(1).regex(/^[^|\r\n]+$/, 'contains invalid characters'),
 })
 
 export async function POST(req: Request) {

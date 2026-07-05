@@ -6,6 +6,7 @@
 // This supports QR-code and barcode-only flows where the token is already trusted.
 
 import * as net from 'net'
+import { assertSipSafe } from './sip2-sanitize'
 
 export interface PatronAuthResult {
   valid: boolean
@@ -35,6 +36,8 @@ export async function authenticatePatron(
   patronId: string,
   pin: string,
 ): Promise<PatronAuthResult> {
+  assertSipSafe(patronId, 'patronId')
+  assertSipSafe(pin, 'pin')
   const host = process.env.SIP2_HOST ?? 'localhost'
   const port = parseInt(process.env.SIP2_PORT ?? '6002', 10)
   const timeoutMs = parseInt(process.env.SIP2_TIMEOUT_MS ?? '5000', 10)

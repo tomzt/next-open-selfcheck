@@ -3,6 +3,7 @@
 // Server-side only. Never import in client components.
 
 import * as net from 'net'
+import { assertSipSafe } from './sip2-sanitize'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -159,6 +160,9 @@ export async function checkoutItem(
   itemBarcode: string,
   pin = '',
 ): Promise<CheckoutResult> {
+  assertSipSafe(patronId, 'patronId')
+  assertSipSafe(itemBarcode, 'itemBarcode')
+  assertSipSafe(pin, 'pin')
   return withSession(async (s) => {
     const institution = process.env.SIP2_INSTITUTION ?? 'LIBRARY'
     s.send(`11YN${sipDate()}AO${institution}|AA${patronId}|AB${itemBarcode}|AC|AD${pin}|`)
@@ -174,6 +178,7 @@ export async function checkoutItem(
 }
 
 export async function checkinItem(itemBarcode: string): Promise<CheckinResult> {
+  assertSipSafe(itemBarcode, 'itemBarcode')
   return withSession(async (s) => {
     const institution = process.env.SIP2_INSTITUTION ?? 'LIBRARY'
     s.send(`09N${sipDate()}AO${institution}|AB${itemBarcode}|AC|`)
@@ -190,6 +195,7 @@ export async function checkinItem(itemBarcode: string): Promise<CheckinResult> {
 }
 
 export async function getPatronLoans(patronId: string): Promise<LoanItem[]> {
+  assertSipSafe(patronId, 'patronId')
   return withSession(async (s) => {
     const institution = process.env.SIP2_INSTITUTION ?? 'LIBRARY'
     // Summary field (10 chars): Y at position 2 = request charged items
@@ -214,6 +220,7 @@ export async function getPatronLoans(patronId: string): Promise<LoanItem[]> {
  * treat it as an error.
  */
 export async function getPatronEmail(patronId: string): Promise<string | null> {
+  assertSipSafe(patronId, 'patronId')
   return withSession(async (s) => {
     const institution = process.env.SIP2_INSTITUTION ?? 'LIBRARY'
     s.send(`63000${sipDate()}          AO${institution}|AA${patronId}|AC|`)
@@ -224,6 +231,7 @@ export async function getPatronEmail(patronId: string): Promise<string | null> {
 }
 
 export async function getPatronFines(patronId: string): Promise<PatronFines> {
+  assertSipSafe(patronId, 'patronId')
   return withSession(async (s) => {
     const institution = process.env.SIP2_INSTITUTION ?? 'LIBRARY'
     // Summary field (10 chars): Y at position 3 = request fine items
