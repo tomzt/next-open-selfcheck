@@ -21,6 +21,13 @@ export interface ReceiptInput {
   outstandingLoanCount: number
 }
 
+// Item titles come from the ILS's SIP2 response (field AJ) — untrusted in
+// principle. Strip newlines so a malformed/malicious title can't inject
+// extra lines into the receipt body.
+function cleanLine(value: string): string {
+  return value.replace(/[\r\n]+/g, ' ').trim()
+}
+
 function buildBody(input: ReceiptInput): string {
   const isThai = input.locale === 'th'
   const lines: string[] = []
@@ -30,10 +37,10 @@ function buildBody(input: ReceiptInput): string {
     for (const item of input.borrowed) {
       const due = item.dueDate
         ? isThai
-          ? ` — กำหนดคืน ${item.dueDate}`
-          : ` — due ${item.dueDate}`
+          ? ` — กำหนดคืน ${cleanLine(item.dueDate)}`
+          : ` — due ${cleanLine(item.dueDate)}`
         : ''
-      lines.push(`  • ${item.title ?? item.itemBarcode}${due}`)
+      lines.push(`  • ${cleanLine(item.title ?? item.itemBarcode)}${due}`)
     }
     lines.push('')
   }
@@ -41,7 +48,7 @@ function buildBody(input: ReceiptInput): string {
   if (input.returned.length > 0) {
     lines.push(isThai ? `คืน (${input.returned.length} รายการ):` : `Returned (${input.returned.length} items):`)
     for (const item of input.returned) {
-      lines.push(`  • ${item.title ?? item.itemBarcode}${isThai ? ' — คืนแล้ว ✓' : ' — returned ✓'}`)
+      lines.push(`  • ${cleanLine(item.title ?? item.itemBarcode)}${isThai ? ' — คืนแล้ว ✓' : ' — returned ✓'}`)
     }
     lines.push('')
   }
@@ -105,7 +112,8 @@ export async function sendReceiptEmail(
       text: buildBody(input),
     })
 
-    console.log(`[email] Sent receipt to ${input.to}`)
+    // Never log the patron's email address — see docs/requirements.md §13.
+    console.log('[email] Receipt sent')
     return 'sent'
   } catch (err) {
     console.error('[email] Send failed:', err)
