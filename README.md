@@ -278,6 +278,21 @@ Works with any **SIP2 v2.0** compatible system:
 
 ---
 
+## Security
+
+Hardened against an OWASP Top 10 pass, verified against a running instance:
+
+- **SIP2 injection blocked** — patron ID / item barcode / PIN are rejected if they contain `|` or `\r`/`\n` (SIP2's own field delimiter and message terminator), both at the API and again at the SIP2 client.
+- **Login rate limiting** — 5 failed attempts / 60s locks out for 5 minutes (by IP and by IP+patronId), since `AUTH_PIN_REQUIRED=false` means a correct ID alone signs a patron in.
+- **Fail-closed auth secret** — a production deploy with no `NEXTAUTH_SECRET` refuses to serve authenticated routes rather than falling back to a default.
+- **Security headers** — CSP, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS on every response.
+- **No patron PII in logs** — failed logins log a masked ID only; email receipts log delivery status, never the address.
+- **No secrets in the Docker image** — `.env` is excluded from every build, not just via `.dockerignore`.
+
+Full details: [`docs/requirements.md §16`](./docs/requirements.md#16-security-hardening).
+
+---
+
 ## Development
 
 ### Mock SIP2 server

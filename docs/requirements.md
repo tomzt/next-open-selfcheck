@@ -212,6 +212,25 @@ Controlled by `AUTH_MODE` env var:
 - **SIP2 message 63** used for barcode auth — ILS-agnostic, works with any compliant system.
 - Session: JWT, 30-minute maxAge, resets on each transaction.
 
+### 7.3 Login rate limiting & abuse protection
+
+Because `AUTH_PIN_REQUIRED=false` is the default (§7.2), a correct patron ID
+alone is enough to sign in. Without a limit, that ID space could be
+enumerated freely from a single kiosk. Barcode login is therefore rate
+limited in-memory (no shared/central state, per the no-central-server
+design in `docs/architecture.md`):
+
+| Parameter | Value |
+|---|---|
+| Failed attempts before lockout | 5 |
+| Window | 60 seconds |
+| Lockout duration | 5 minutes |
+| Keyed by | client IP, and IP+patronId |
+
+Every failed attempt is logged with the patron ID masked (first/last 2
+characters only — never the full ID, per §13). This resets on process
+restart, which is an accepted trade-off for a single-instance kiosk.
+
 ---
 
 ## 8. Session & Idle Timeout
@@ -335,9 +354,52 @@ Patron name and card number are **never written to disk**. Only transaction meta
 |---|---|---|
 | 1 | ✅ Done | Scaffold, Welcome Screen, i18n, Docker, Mock SIP2 |
 | 2 | ✅ Done | Auth system (SIP2 barcode, OIDC, middleware guard) |
-| 3 | ✅ Done (flow to revise) | Main Menu, transaction screens, session timeout |
-| 3b | 🔄 Next | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle |
-| 4 | 📋 Planned | RFID integration (rfid-adapter, ISO 15693, AFI write) |
+| 3 | ✅ Done | Main Menu, transaction screens, session timeout |
+| 3b | ✅ Done | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle |
+| 4 | 🔄 Next | RFID integration (rfid-adapter, ISO 15693, AFI write) |
 | 5 | 📋 Planned | Bookdrop app, staff return log |
 | 6 | 📋 Planned | Workstation app (RFID tag programming) |
 | 7 | 📋 Planned | First-Run Setup Wizard |
+
+---
+
+## 16. Security Hardening
+
+Confirmed via an OWASP Top 10 pass and independently verified against
+a running instance (mock SIP2 + a real `docker build`/`docker run`
+cycle), not just read from source.
+
+### 16.1 SIP2 protocol injection
+
+SIP2 messages are pipe-delimited and `\r`-terminated. Any patron ID,
+item barcode, or PIN reaching the wire is rejected if it contains `|`,
+`\r`, or `\n` — both at the API boundary (clean `400`) and again at the
+SIP2 client itself as defense-in-depth, so a value can never reach an
+ILS with forged fields spliced in.
+
+### 16.2 Auth secret — fail closed
+
+`NEXTAUTH_SECRET` has no usable fallback in production. A deployment
+started with `NODE_ENV=production` and no real secret throws rather
+than silently signing sessions with a well-known default — there is no
+scenario where the app serves a patron with a forgeable session.
+
+### 16.3 HTTP security headers
+
+Baseline headers on every response: `Content-Security-Policy`,
+`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`,
+`Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security`.
+CSP allows `'unsafe-eval'` only when `NODE_ENV !== 'production'`
+(required by `next dev`'s bundler) — dropped in the deployed image.
+
+### 16.4 Patron data in logs
+
+Per §13, patron identifiers never reach a log line unmasked. Failed
+login attempts log a masked patron ID (first/last 2 characters); the
+email receipt path logs delivery status only, never the address.
+
+### 16.5 Docker image hygiene
+
+The image build never carries `.env` (or any local secret file) into a
+layer — enforced with an explicit delete step right after the source
+copy, not solely relying on `.dockerignore`.

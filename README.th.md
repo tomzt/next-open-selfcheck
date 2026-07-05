@@ -278,6 +278,21 @@ Hardware อ้างอิง: **ACS ACR1552U** (ISO 15693, USB, plug & play)
 
 ---
 
+## ความปลอดภัย
+
+ผ่านการตรวจสอบตาม OWASP Top 10 และยืนยันด้วยการรันจริง (ไม่ใช่แค่อ่านโค้ด):
+
+- **ป้องกัน SIP2 injection** — เลขบัตรผู้ใช้ / บาร์โค้ดหนังสือ / PIN จะถูกปฏิเสธถ้ามีอักขระ `|` หรือ `\r`/`\n` (ตัวคั่นฟิลด์และตัวจบข้อความของ SIP2 เอง) ทั้งที่ระดับ API และที่ SIP2 client อีกชั้น
+- **จำกัดจำนวนครั้ง login ที่ผิด** — ผิด 5 ครั้งใน 60 วินาที ล็อก 5 นาที (แยกตาม IP และ IP+เลขบัตร) เพราะ `AUTH_PIN_REQUIRED=false` หมายความว่าแค่เลขบัตรถูกก็ login ผ่านได้
+- **Fail-closed auth secret** — ถ้า deploy จริง (`NODE_ENV=production`) แล้วไม่ได้ตั้ง `NEXTAUTH_SECRET` ระบบจะปฏิเสธไม่ให้เข้าหน้าที่ต้อง login แทนที่จะใช้ค่า default แบบเงียบๆ
+- **Security headers** — CSP, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS ทุก response
+- **ไม่มีข้อมูล patron หลุดใน log** — login ที่ fail จะ log แค่เลขบัตรแบบ mask บางส่วน, การส่ง email ใบเสร็จ log แค่สถานะ ไม่ log อีเมลจริง
+- **ไม่มี secret หลุดเข้า Docker image** — `.env` ถูกกันออกจากทุก build ไม่ได้พึ่งแค่ `.dockerignore` อย่างเดียว
+
+รายละเอียดเต็ม: [`docs/requirements.md §16`](./docs/requirements.md#16-security-hardening)
+
+---
+
 ## การพัฒนา
 
 ### Mock SIP2 Server
