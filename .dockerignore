@@ -1,0 +1,24 @@
+# Never send secrets or local dev state into a Docker build context.
+.env
+.env.*
+!.env.example
+
+# Dependencies / build output — reinstalled and rebuilt inside the image
+node_modules
+**/node_modules
+.next
+**/.next
+.turbo
+**/.turbo
+
+# VCS / editor / OS noise
+.git
+.gitignore
+.github
+.vscode
+.idea
+.DS_Store
+
+# Docs — not needed at build time
+*.md
+!README.md

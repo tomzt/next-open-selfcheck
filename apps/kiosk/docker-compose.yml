@@ -1,8 +1,8 @@
 services:
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: apps/kiosk/Dockerfile
     ports:
       - "3005:3000"
     environment:
