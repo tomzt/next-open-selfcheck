@@ -4,6 +4,10 @@
 > discussion, kept so the reasoning doesn't have to be redone later. Update
 > or promote sections into `requirements.md`/`architecture.md` once (if)
 > any of this is actually decided.
+>
+> **This file is the source of truth.** [`future-considerations-th.md`](./future-considerations-th.md)
+> is a translation — if they ever disagree, this English version wins.
+> Edit this one first, then sync the Thai version.
 
 ---
 
@@ -139,3 +143,7 @@ Only relevant if RFID-on-tablet is actually wanted.
 - [ ] Decide per-site: independent Docker stack (current model, resilient) vs. shared central backend (cheaper, single point of failure) — see §4.
 - [ ] Confirm chosen tablet model actually supports USB-OTG (not universal on cheap Android tablets) if a wired barcode scanner is planned instead of Bluetooth.
 - [ ] Budget a lockable kiosk stand/enclosure regardless of platform choice.
+
+---
+
+[🇹🇭 ภาษาไทย](./future-considerations-th.md)
