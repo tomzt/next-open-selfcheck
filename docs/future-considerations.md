@@ -77,12 +77,23 @@ an established retail/POS pattern already.
 talking to a USB/Lightning accessory needs Apple's MFi (Made for
 iPhone/iPad) certification via the External Accessory framework — a
 closed process the manufacturer must opt into, unlike Android's more open
-USB Host API. Checked directly: ACS's own product page for the
-**ACR1552U** (the RFID reader referenced in this project's docs) states
-it supports **iOS/iPadOS 16+** — a positive signal, but no public source
-confirms a third-party developer SDK exists (vs. just "the device works
-with iOS" at a consumer level). **Needs direct confirmation from ACS**
-before relying on iPad for a native RFID path.
+USB Host API.
+
+**Update (verified against ACS's own documentation):** ACS's product page
+claims ACR1552U support for "iOS/iPadOS 16+", but their
+`AN-ACS-ApduTool-iOS-1.00` application note shows what that actually
+means: **"ACS ApduTool"** — a standalone diagnostic app, downloaded from
+the regular Apple App Store, described as a tool to "test and optimize
+your smart card operations with APDU. Send APDU commands easily,
+interpret responses." There is no mention anywhere in ACS's iOS
+documentation of an SDK, framework, or library a third-party app could
+embed. **"iOS support" here means "you can test the reader with ACS's own
+app" — not "you can build your own iOS app that talks to it."** This
+meaningfully weakens the case for iPad + native RFID versus what was
+assumed earlier. Not fully closed — ACS's technical/sales team may offer
+a separate SDK not covered in public documentation — but based on
+everything checked so far, **Android remains the clearer path if a
+native RFID app is ever built.**
 
 **Kiosk lockdown:** iOS's built-in "Guided Access" is comparable to
 Android's kiosk/screen-pinning options — no meaningful difference.
@@ -133,12 +144,12 @@ Only relevant if RFID-on-tablet is actually wanted.
 |---|---|---|
 | Pilot: 1 Android tablet as thin client (barcode-only, existing backend) | Parallel, any time | Pure hardware/ops work, zero dev time, de-risks Wi-Fi/scanner/mount before buying a fleet |
 | Camera-based QR scanning for login | Parallel, whenever convenient | Small, isolated web feature, doesn't touch RFID-related code |
-| iPad vs. Android decision per site | Parallel with the pilot | Budget vs. longevity trade-off; confirm ACR1552U's iOS SDK story with ACS if RFID matters to that site |
+| iPad vs. Android decision per site | Parallel with the pilot | Budget vs. longevity trade-off; if RFID matters, lean Android — ACS's public iOS docs show only a diagnostic app, not a third-party SDK (see §3) |
 | Native (Flutter) rebuild + RFID-on-tablet | **After** Phase 4 RFID is built and proven on the existing Mini PC path | Avoids debugging new hardware (RFID protocol/AFI writes) and a new framework at the same time |
 
 ## 7. Open questions before committing budget
 
-- [ ] Confirm with ACS whether ACR1552U has a public/licensable iOS SDK for third-party apps, or only MFi-gated first-party support.
+- [x] Confirm with ACS whether ACR1552U has a public/licensable iOS SDK for third-party apps — **checked `AN-ACS-ApduTool-iOS-1.00.pdf`: no SDK/framework found, only a first-party diagnostic App Store app ("ACS ApduTool").** Still worth a direct question to ACS sales/technical support in case an SDK exists outside public docs, but plan around Android for native RFID unless that comes back positive.
 - [ ] Site survey: is Wi-Fi reliable enough at each candidate kiosk location, or does it need wired backhaul to an access point near the stand?
 - [ ] Decide per-site: independent Docker stack (current model, resilient) vs. shared central backend (cheaper, single point of failure) — see §4.
 - [ ] Confirm chosen tablet model actually supports USB-OTG (not universal on cheap Android tablets) if a wired barcode scanner is planned instead of Bluetooth.
