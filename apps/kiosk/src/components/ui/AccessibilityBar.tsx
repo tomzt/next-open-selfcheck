@@ -13,7 +13,17 @@ type Theme = 'light' | 'dark' | 'high-contrast'
 
 const FONT_SIZES: FontSize[] = ['kiosk-sm', 'kiosk-md', 'kiosk-lg', 'kiosk-xl']
 const THEMES: Theme[] = ['light', 'dark', 'high-contrast']
-const DEFAULT_FONT: FontSize = 'kiosk-md'
+
+// NEXT_PUBLIC_DEFAULT_FONT_SIZE uses friendly names — map to the internal
+// CSS data-attribute values. Unknown/unset falls back to medium.
+const FONT_SIZE_MAP: Record<string, FontSize> = {
+  small: 'kiosk-sm',
+  medium: 'kiosk-md',
+  large: 'kiosk-lg',
+  xlarge: 'kiosk-xl',
+}
+const DEFAULT_FONT: FontSize =
+  FONT_SIZE_MAP[process.env.NEXT_PUBLIC_DEFAULT_FONT_SIZE ?? 'medium'] ?? 'kiosk-md'
 const DEFAULT_THEME: Theme = 'light'
 
 export default function AccessibilityBar() {

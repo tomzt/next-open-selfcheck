@@ -274,6 +274,14 @@ button, [role="button"] {
   .kt-btn-primary:not(:disabled):hover {
     background-color: rgb(var(--kt-primary-hover));
   }
+  /* Touch kiosks have no real cursor, and a tapped element can get stuck
+     showing its :hover state until something else is tapped — looks broken. */
+  [data-input-mode="touch"] .kt-btn-primary:hover {
+    background-color: rgb(var(--kt-primary));
+  }
+  [data-input-mode="touch"] * {
+    cursor: none;
+  }
 
   /* Ghost / secondary button */
   .kt-btn-ghost {

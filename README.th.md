@@ -140,6 +140,7 @@ SIP2_PORT=6002
 SIP2_INSTITUTION=LIBRARY
 SIP2_LOGIN_USER=
 SIP2_LOGIN_PASSWORD=
+SIP2_DEFAULT_CURRENCY=THB   # ใช้แสดงค่าปรับเฉพาะกรณี ILS ไม่ส่งฟิลด์ BH มา
 
 # Auth mode: barcode | oidc | both
 AUTH_MODE=barcode
@@ -156,8 +157,11 @@ OIDC_PROVIDER_NAME=ระบบ SSO สถาบัน
 OIDC_PATRON_ID_CLAIM=preferred_username
 
 # UI
-NEXT_PUBLIC_KIOSK_THEME=light        # light | dark | colorful | glass | material
-NEXT_PUBLIC_DEFAULT_LANGUAGE=th      # th | en
+NEXT_PUBLIC_KIOSK_THEME=light            # light | dark | colorful | glass | material
+NEXT_PUBLIC_DEFAULT_LANGUAGE=th          # th | en
+NEXT_PUBLIC_DEFAULT_FONT_SIZE=medium     # small | medium | large | xlarge (แค่ตอนโหลดครั้งแรก —
+                                         #  ผู้ใช้ยังปรับเองผ่าน accessibility bar ได้)
+NEXT_PUBLIC_INPUT_MODE=mouse             # mouse | touch — touch จะซ่อน cursor และปิด hover effect
 KIOSK_SERVICES=borrow,return,loans,fines   # ลบบริการที่ไม่ต้องการออก
 
 # Session

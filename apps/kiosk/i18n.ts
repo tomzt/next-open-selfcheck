@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 import { getRequestConfig } from 'next-intl/server'
 
 // Supported locales — add more here for community contributions

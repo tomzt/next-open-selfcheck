@@ -231,7 +231,7 @@ export async function getPatronFines(patronId: string): Promise<PatronFines> {
 
     const resp = await s.receive()
     const bv = parseField(resp, 'BV')
-    const currency = parseField(resp, 'BH') ?? 'THB'
+    const currency = parseField(resp, 'BH') ?? process.env.SIP2_DEFAULT_CURRENCY ?? 'THB'
     return {
       totalAmount: parseFloat(bv ?? '0') || 0,
       currency,

@@ -5,7 +5,7 @@ import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { locales } from '../../../i18n'
 import Providers from '@/components/Providers'
-import { kioskTheme } from '@/lib/theme'
+import { kioskTheme, inputMode } from '@/lib/theme'
 import { libraryNameFor } from '@/lib/site-config'
 import '../globals.css'
 
@@ -38,7 +38,12 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   const messages = await getMessages()
 
   return (
-    <html lang={locale} data-kiosk-theme={kioskTheme} suppressHydrationWarning>
+    <html
+      lang={locale}
+      data-kiosk-theme={kioskTheme}
+      data-input-mode={inputMode}
+      suppressHydrationWarning
+    >
       <body className="antialiased">
         <Providers>
           <NextIntlClientProvider messages={messages}>
