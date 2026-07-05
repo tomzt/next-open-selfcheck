@@ -8,6 +8,7 @@ import createMiddleware from 'next-intl/middleware'
 import { getToken } from 'next-auth/jwt'
 import { type NextRequest, NextResponse } from 'next/server'
 import { locales, defaultLocale } from './i18n'
+import { nextAuthSecret } from '@/lib/auth-secret'
 
 const intlMiddleware = createMiddleware({
   locales,
@@ -32,11 +33,7 @@ export async function middleware(req: NextRequest) {
   const isPublic = !routeSegment || PUBLIC_SEGMENTS.has(routeSegment)
 
   if (!isPublic) {
-    const secret =
-      process.env.NEXTAUTH_SECRET ??
-      (process.env.NODE_ENV !== 'production' ? 'dev-secret-change-in-production' : undefined)
-
-    const token = await getToken({ req, secret })
+    const token = await getToken({ req, secret: nextAuthSecret })
 
     if (!token) {
       const locale = detectLocale(req)

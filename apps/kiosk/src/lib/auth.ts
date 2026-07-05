@@ -9,6 +9,8 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import type { NextAuthOptions } from 'next-auth'
 import { authenticatePatron } from './sip2-patron'
+import { isLockedOut, recordFailure, recordSuccess, maskId } from './rate-limit'
+import { nextAuthSecret } from './auth-secret'
 
 export type AuthMode = 'barcode' | 'oidc' | 'both'
 export const authMode = (process.env.AUTH_MODE ?? 'barcode') as AuthMode
@@ -28,6 +30,16 @@ function buildOidcProvider(): any | null {
   const clientId = process.env.OIDC_CLIENT_ID
   const clientSecret = process.env.OIDC_CLIENT_SECRET
   if (!issuer || !clientId || !clientSecret) return null
+
+  try {
+    const parsed = new URL(issuer)
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      throw new Error('unsupported protocol')
+    }
+  } catch {
+    console.error(`[auth] OIDC_ISSUER is not a valid http(s) URL: ${issuer}`)
+    return null
+  }
 
   const patronIdClaim =
     process.env.OIDC_PATRON_ID_CLAIM?.trim() || 'preferred_username'
@@ -56,11 +68,8 @@ function buildOidcProvider(): any | null {
   }
 }
 
-const devSecret =
-  process.env.NODE_ENV !== 'production' ? 'dev-secret-change-in-production' : undefined
-
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET ?? devSecret,
+  secret: nextAuthSecret,
 
   session: {
     strategy: 'jwt',
@@ -82,20 +91,43 @@ export const authOptions: NextAuthOptions = {
               patronId: { label: 'Card / QR', type: 'text' },
               pin: { label: 'PIN', type: 'password' },
             },
-            async authorize(credentials) {
+            async authorize(credentials, req) {
               if (!credentials?.patronId?.trim()) return null
-              try {
-                const result = await authenticatePatron(
-                  credentials.patronId.trim(),
-                  credentials.pin ?? '',
+
+              const patronId = credentials.patronId.trim()
+              const ip =
+                (req?.headers as Record<string, string> | undefined)?.['x-forwarded-for']
+                  ?.split(',')[0]
+                  ?.trim() ?? 'unknown'
+              const rateLimitKey = `${ip}:${patronId}`
+
+              if (isLockedOut(rateLimitKey) || isLockedOut(ip)) {
+                console.warn(
+                  `[auth] Blocked login attempt (rate limited) for patronId=${maskId(patronId)} from ${ip}`,
                 )
-                if (!result.valid) return null
+                return null
+              }
+
+              try {
+                const result = await authenticatePatron(patronId, credentials.pin ?? '')
+                if (!result.valid) {
+                  recordFailure(rateLimitKey)
+                  recordFailure(ip)
+                  console.warn(
+                    `[auth] Failed login attempt for patronId=${maskId(patronId)} from ${ip}`,
+                  )
+                  return null
+                }
+                recordSuccess(rateLimitKey)
+                recordSuccess(ip)
                 return {
-                  id: result.patronId ?? credentials.patronId,
+                  id: result.patronId ?? patronId,
                   name: result.patronName ?? undefined,
                   email: null,
                 }
               } catch (err) {
+                recordFailure(rateLimitKey)
+                recordFailure(ip)
                 console.error('[auth] SIP2 error:', err)
                 return null
               }
