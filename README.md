@@ -23,10 +23,10 @@ Built for **any library worldwide** — RMUTI (Rajamangala University of Technol
 | **UI** | Basic HTML | 5 themes: light / dark / colorful / glass / material |
 | **Transaction** | One item at a time | Batch scan → review list → confirm → email receipt |
 | **Receipt** | Thermal printer | Email to patron (eco-friendly, no hardware) |
-| **RFID** | — | ISO 15693 via Web Serial API (optional) |
+| **RFID** | — | ISO 15693 via Android USB Host (Kiosk/Workstation) + Feig OEM module (Bookdrop) |
 | **Bookdrop** | — | Automated return station, RFID-only (planned) |
 | **Workstation** | — | Staff RFID tag programming (planned) |
-| **Deploy** | PHP server | Docker per site |
+| **Deploy** | PHP server | **Centralized Docker** (1 server) + Flutter native apps (tablets) |
 | **Config** | Code edit | `.env` only — no code change to deploy |
 | **i18n** | — | Thai + English built-in, community-extensible |
 
@@ -36,9 +36,9 @@ Built for **any library worldwide** — RMUTI (Rajamangala University of Technol
 
 | App | Description | Status |
 |---|---|---|
-| [`apps/kiosk`](./apps/kiosk) | Patron self-check — borrow, return, loans, fines | ✅ Phase 3 done |
-| [`apps/bookdrop`](./apps/bookdrop) | Automated return station — RFID-only, no touch screen | 📋 Planned (Phase 5) |
-| [`apps/workstation`](./apps/workstation) | Staff RFID workstation — program tags, write AFI | 📋 Planned (Phase 6) |
+| [`apps/kiosk`](./apps/kiosk) | Patron self-check — borrow, return, loans, fines (web prototype done; Flutter rewrite in Phase 4) | ✅ Phase 3b done |
+| [`apps/bookdrop`](./apps/bookdrop) | Automated return station — RFID-only (Feig reader + backend daemon) | 📋 Planned (Phase 5) |
+| [`apps/workstation`](./apps/workstation) | Staff RFID workstation — patron search, manual checkin/checkout (Flutter app) | 📋 Planned (Phase 6) |
 
 All apps are **independent** — deploy Kiosk alone without Bookdrop or Workstation.
 

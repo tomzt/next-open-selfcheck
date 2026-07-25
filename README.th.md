@@ -23,10 +23,10 @@
 | **UI** | HTML พื้นฐาน | 5 ธีม: light / dark / colorful / glass / material |
 | **การทำรายการ** | ทีละรายการ | Batch scan → ดูรายการ → ยืนยัน → ส่ง email |
 | **ใบเสร็จ** | พิมพ์ slip | ส่ง email (รักษ์โลก ไม่ต้องพิมพ์) |
-| **RFID** | — | ISO 15693 ผ่าน Web Serial API (optional) |
+| **RFID** | — | ISO 15693 ผ่าน Android USB Host (Self-check/Workstation) + Feig reader (Bookdrop) |
 | **Bookdrop** | — | ตู้รับคืนอัตโนมัติ รองรับ RFID (แผนในอนาคต) |
 | **Workstation** | — | สำหรับเจ้าหน้าที่โปรแกรม RFID Tag (แผนในอนาคต) |
-| **Deploy** | PHP server | Docker per site |
+| **Deploy** | PHP server | **Docker แบบกลางศูนย์** (1 server) + Flutter native apps (tablets) |
 | **Config** | แก้โค้ด | `.env` เท่านั้น — ไม่ต้องแก้โค้ดเพื่อ deploy |
 | **i18n** | — | ภาษาไทย + อังกฤษ พร้อม community เพิ่มภาษาได้ |
 
@@ -36,9 +36,9 @@
 
 | แอป | คำอธิบาย | สถานะ |
 |---|---|---|
-| [`apps/kiosk`](./apps/kiosk) | ตู้ Self-Check — ยืม, คืน, ตรวจสอบรายการ, ค้นหาค่าปรับ | ✅ Phase 3 เสร็จแล้ว |
-| [`apps/bookdrop`](./apps/bookdrop) | ตู้รับคืนอัตโนมัติ — RFID-only ไม่มีหน้าจอสัมผัส | 📋 แผน (Phase 5) |
-| [`apps/workstation`](./apps/workstation) | Workstation เจ้าหน้าที่ — โปรแกรม RFID Tag | 📋 แผน (Phase 6) |
+| [`apps/kiosk`](./apps/kiosk) | ตู้ Self-Check — ยืม, คืน, ตรวจสอบรายการ, ค้นหาค่าปรับ (web prototype เสร็จ; Flutter rewrite Phase 4) | ✅ Phase 3b เสร็จแล้ว |
+| [`apps/bookdrop`](./apps/bookdrop) | ตู้รับคืนอัตโนมัติ — RFID-only (Feig reader + backend daemon) | 📋 แผน (Phase 5) |
+| [`apps/workstation`](./apps/workstation) | Workstation เจ้าหน้าที่ — ค้นหา patron, checkin/checkout ด้วยมือ (Flutter app) | 📋 แผน (Phase 6) |
 
 แต่ละแอป **เป็นอิสระต่อกัน** — deploy Kiosk ได้โดยไม่ต้องมี Bookdrop หรือ Workstation
 

@@ -350,16 +350,20 @@ Patron name and card number are **never written to disk**. Only transaction meta
 
 ## 15. Phase Roadmap
 
-| Phase | Status | Scope |
-|---|---|---|
-| 1 | ✅ Done | Scaffold, Welcome Screen, i18n, Docker, Mock SIP2 |
-| 2 | ✅ Done | Auth system (SIP2 barcode, OIDC, middleware guard) |
-| 3 | ✅ Done | Main Menu, transaction screens, session timeout |
-| 3b | ✅ Done | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle |
-| 4 | 🔄 Next | RFID integration (rfid-adapter, ISO 15693, AFI write) |
-| 5 | 📋 Planned | Bookdrop app, staff return log |
-| 6 | 📋 Planned | Workstation app (RFID tag programming) |
-| 7 | 📋 Planned | First-Run Setup Wizard |
+**Architecture: Centralized server + Flutter native clients** (decided 2026-07-25)
+
+| Phase | Status | Scope | Notes |
+|---|---|---|---|
+| 1 | ✅ Done | Scaffold, Welcome Screen, i18n, Docker, Mock SIP2 | Next.js web foundation |
+| 2 | ✅ Done | Auth system (SIP2 barcode, OIDC, middleware guard) | Backend auth |
+| 3 | ✅ Done | Main Menu, transaction screens, session timeout | Web UI prototype |
+| 3b | ✅ Done | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle | Web foundation complete |
+| 4 | 🔄 Next | **Flutter Kiosk app + RFID (USB Host via ACR1552U)** | Rewrite UI to native; token-based auth for Flutter clients |
+| 5 | 📋 Planned | **Bookdrop daemon (Feig SDK + auto-checkin)** | Node.js service on central server |
+| 6 | 📋 Planned | **Workstation Flutter app (staff tool)** | Patron search, manual checkin/checkout, logs |
+| 7 | 📋 Planned | First-Run Setup Wizard | Config wizard (post-Phase 6) |
+
+**Key change:** Phases 4–6 are **Flutter native apps + centralized server**, not separate local Docker instances per location. Backend (Next.js API) serves all clients simultaneously.
 
 ---
 
