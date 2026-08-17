@@ -1,0 +1,470 @@
+<html>
+<head>
+<TITLE>MyActiveX - Methods, Properties, and Events</TITLE>
+
+<SCRIPT LANGUAGE="JavaScript">
+	window.onload=function()
+	{
+		 var devCnt = MyActiveX1.RDR_GetLoadedReaderDriverCount();
+	 var j=0;
+     for(j=0;j<devCnt;j++)
+     {
+         var devName = MyActiveX1.RDR_GetLoadedReaderDriverOpt(j,"NAME");
+         var varItem = new Option(devName, j);      
+         DeviceType.options.add(varItem);      
+     }
+
+	 var ComNum = MyActiveX1.COMPort_Enum();
+	 for(j=0;j<ComNum;j++)
+	 {
+	     var sComName = MyActiveX1.COMPort_GetEnumItem(j);
+         var varItem = new Option(sComName, j);      
+         ComName.options.add(varItem);    
+	 }
+	 
+	 BaudVal.selectedIndex = 1;
+	 FramVal.selectedIndex = 0;
+	 
+	 Open.disabled=false;
+	 Close.disabled=true;
+	 
+	 Inventory.disabled=true;  
+	 Search.disabled=true; 
+	 Initialization.disabled=true;
+	}
+
+	function GetSelectAntStr()
+	{
+		
+		
+		var arr=GetSelectAnt();
+		var str="";
+		for(var i=0;i<arr.length;i++)
+		{
+			str=str+arr[i];
+		
+			if((i+1)<arr.length)
+			{
+				str=str+"-";
+			}
+		}
+		
+		return str;
+	}
+
+
+	function OnInventory()
+	{
+	
+	
+	
+	
+	var nret=0;
+	var recordCnt=0;
+	var j=0;
+	CardSerial.options.length=0
+    nret = MyActiveX1.RDR_InitInventory();
+	if(nret!=0)
+	{
+		return ;
+	}
+	nret = MyActiveX1.RDR_Enable15693(0,0x00,0);
+	if(nret!=0)
+	{
+	    MyActiveX1.RDR_FinishInventory();
+		return;
+	}
+	
+	var antstr=GetSelectAntStr();
+	
+	nret = MyActiveX1.RDR_Inventory(0,antstr);
+	if(nret!=0)
+	{
+	    MyActiveX1.RDR_FinishInventory();
+		return;
+	}
+	recordCnt = MyActiveX1.RDR_GetRecordCnt();
+	
+	for(j=0;j<recordCnt;j++)
+	{
+	    var sTagInfo = MyActiveX1.GetRecord(j).split("-");
+		var sTagID = sTagInfo[sTagInfo.length-1];
+		var varItem = new Option(sTagID, j);      
+        CardSerial.options.add(varItem); 
+	}
+	if(recordCnt>0)
+	{
+		Inventory.disabled=false;  
+		Search.disabled=false; 
+	    Initialization.disabled=false;		
+	}
+	else
+	{
+	   Inventory.disabled=false;  
+	   Search.disabled=true; 
+	   Initialization.disabled=true;
+	}
+	
+    MyActiveX1.RDR_FinishInventory();
+		
+		
+	}
+	
+	
+	function GetSelectAnt()
+	{
+		var  ant=new Array();
+		
+		if(ANT1.checked)
+			ant.push(1);
+		
+		if(ANT2.checked)
+			ant.push(2);
+		
+		if(ANT3.checked)
+			ant.push(3);
+			
+		if(ANT4.checked)	
+			ant.push(4);
+		
+		return ant;
+	}
+	
+	var sleep = function(time) 
+	{
+		var startTime = new Date().getTime() + parseInt(time, 10);
+		while(new Date().getTime() < startTime) {}
+	};
+	
+	
+	function OnSearch()
+	{
+	
+		 var nret=0;
+	     var uids = CardSerial[CardSerial.selectedIndex].text;
+   
+   
+		if(uids=="")
+		{
+			alert("The UID can not be null.");
+			return;
+		}
+   
+		var ants=GetSelectAnt();
+		
+		var success=false;
+		
+		if(nret==0)
+		{
+			for (i = 0; i < ants.length; i++) 
+			{ 
+			
+				nret=MyActiveX1.RDR_SetAcessAntenna(ants[i]);
+					
+				if(nret==0)
+				{
+					nret = MyActiveX1.ISO15693_Connect(20,1,uids);
+				
+					if(nret==0)
+					{
+						nret=MyActiveX1.ST25DV04K_WriteDynamicConfiguration(2,1);
+						
+						if(nret==0)
+						{
+							nret=MyActiveX1.ST25DV04K_ManageGPO(0);
+							
+							if(nret==0)
+							{
+								success=true;
+							}
+						}
+						
+						MyActiveX1.RDR_TagDisconnect();
+
+					}
+					
+					if(success)
+					{
+						break;
+					}
+				}
+			}
+			
+			sleep(8000);
+			
+		}
+		
+		MyActiveX1.RDR_CloseRFTransmitter();
+		
+		
+		if(success==true)
+		{
+			alert("OK");
+		}
+		else
+		{
+			alert("FAIL");
+		}
+	}
+	
+	function OnInitialization()
+	{
+	
+		var nret=0;
+	    var uids = CardSerial[CardSerial.selectedIndex].text;
+		var key = KeyData.value;
+   
+		if(uids=="")
+		{
+			alert("The UID can not be null.");
+			return;
+		}
+   
+		var ants=GetSelectAnt();
+		
+		var success=false;
+		
+		if(nret==0)
+		{
+		
+			for (i = 0; i < ants.length; i++) 
+			{ 
+			
+				nret=MyActiveX1.RDR_SetAcessAntenna(ants[i]);
+					
+				if(nret==0)
+				{
+					nret = MyActiveX1.ISO15693_Connect(20,1,uids);	
+				
+					if(nret==0)
+					{
+						nret=MyActiveX1.ST25DV04K_PresentPassword(0,key);
+						
+						if(nret==0)
+						{
+							nret=MyActiveX1.ST25DV04K_WriteConfiguration(0,0x81);
+							
+							if(nret==0)
+							{
+								nret=MyActiveX1.ST25DV04K_WriteConfiguration(0x02,0x01);
+								success=true;
+									
+							}
+						}
+						
+						MyActiveX1.RDR_TagDisconnect();
+						
+						if(success)
+						break;
+						
+					}
+				}
+			}
+			
+			//sleep(3000);			
+		}
+		
+		if(success==true)
+		{
+			 alert("OK");
+		}
+		else
+		{
+			alert("FAIL");
+		}
+	}
+	
+	function OnOpen()
+{
+     var nret = -1;
+	 var sOpenType = OpenType[OpenType.selectedIndex].text;
+	 var sDevName = DeviceType[DeviceType.selectedIndex].text;
+	 if(sOpenType=="COM")
+	 {
+	    var sComName = ComName[ComName.selectedIndex].text;
+		var sBaud = BaudVal[BaudVal.selectedIndex].text;
+		var sFrame = FramVal[FramVal.selectedIndex].text;
+	 	nret = MyActiveX1.RDR_OpenPort(sDevName,sComName,sBaud,sFrame);
+	 }
+	 else if(sOpenType=="USB")
+	 {
+	    nret = MyActiveX1.RDR_OpenUSB(sDevName,0,"");
+	 }
+	 else if(sOpenType=="NET")
+	 {
+	     var sIp = IPAddr.value;
+		 var nPort = nPortVal.value;
+		 nret = MyActiveX1.RDR_OpenNet(sDevName,sIp,nPort);
+	 }
+	 if(nret==0)
+	 {
+	    DeviceType.disabled=true;
+        OpenType.disabled=true;
+        ComName.disabled=true;
+        BaudVal.disabled=true;
+        FramVal.disabled=true;
+        IPAddr.disabled=true;
+        nPortVal.disabled=true;
+		Open.disabled=true;
+	    Close.disabled=false;
+		Inventory.disabled=false;
+		CardSerial.disabled=false;
+		
+		 Search.disabled=false; 
+		Initialization.disabled=false;
+	 }
+	 else
+	 {
+	    alert("It's failed to open the reader!");
+	 }
+}
+	
+	function OnClose()
+	{
+	
+     MyActiveX1.RDR_Close();
+	 DeviceType.disabled=false;
+     OpenType.disabled=false;
+	 Open.disabled=false;
+	 Close.disabled=true;
+	 CardSerial.disabled=true;
+	 Inventory.disabled=true;
+	
+	 CardSerial.options.length=0;
+	 Search.disabled=true; 
+	 Initialization.disabled=true;		
+
+	 OpenTypeChange();
+
+
+	}
+	
+	function OpenTypeChange()
+{
+    var sOpenType = OpenType[OpenType.selectedIndex].text;
+	if(sOpenType=="COM")
+	{
+	    ComName.disabled = false;
+		BaudVal.disabled = false;
+		FramVal.disabled = false;
+		IPAddr.disabled = true;
+		nPortVal.disabled = true;
+	}
+	else if(sOpenType=="NET")
+	{
+	    ComName.disabled = true;
+		BaudVal.disabled = true;
+		FramVal.disabled = true;
+		IPAddr.disabled = false;
+		nPortVal.disabled = false;
+	}
+	else if(sOpenType=="USB")
+	{
+	    ComName.disabled = true;
+		BaudVal.disabled = true;
+		FramVal.disabled = true;
+		IPAddr.disabled = true;
+		nPortVal.disabled = true;
+	}
+}
+	
+
+	
+</SCRIPT>
+
+</head>
+
+<body>
+
+<center style="font-weight: 700">
+
+<p></p>
+<OBJECT ID="MyActiveX1" WIDTH=0 HEIGHT=0
+ CLASSID="CLSID:38BEF3F4-E284-4548-8E7B-FE20AE443AD8">
+    <PARAM NAME="_Version" VALUE="65536">
+    <PARAM NAME="_ExtentX" VALUE="2646">
+    <PARAM NAME="_ExtentY" VALUE="1323">
+    <PARAM NAME="_StockProps" VALUE="0">
+</OBJECT>
+
+<fieldset style="font: 9pt 宋体; width: 600px; height: 200"><legend>RFID Device Parameters</legend>
+
+    Reader:<select name="DeviceType" style="width:75px"></select>
+    Communication:<select name="OpenType" style="width:75px"  onchange="OpenTypeChange();"><option value=0>COM</option><option value=1>USB</option><option value=2>NET</option></select>
+
+    <p></p>
+    <fieldset style="font: 9pt 宋体; width: 500px; height: 40"><legend>Serial Port Parameters</legend>
+       Serial Port:<select name="ComName" style="width:75px"></select>
+       Baud:<select name="BaudVal" style="width:75px"><option value=0>9600</option><option value=1>38400</option><option value=2>115200</option></select>
+       Frame:<select name="FramVal" style="width:75px"><option value=0>8E1</option><option value=1>8N1</option><option value=2>8O1</option></select>
+    </fieldset>
+
+    <p></p>
+    <fieldset style="font: 9pt 宋体; width: 500px; height: 40"><legend>Net Parameters</legend>
+       IP:<INPUT TYPE ="text" NAME="IPAddr" VALUE="192.168.1.222 " size=50 style="width: 110px; height: 20px">
+       Port:<INPUT TYPE ="text" NAME="nPortVal" VALUE="9909" size=50 style="width: 40px; height: 20px">
+    </fieldset>
+
+    <p></p>
+    <INPUT TYPE="button" NAME="Open" style="width:100px;" VALUE="Open"   ONCLICK=OnOpen()>
+    <INPUT TYPE="button" NAME="Close" style="width:100px;" VALUE="Close" ONCLICK=OnClose()>
+</fieldset>
+
+<p></p>
+<fieldset style="font: 9pt 宋体; width: 700px;"><legend>ST25DV04K</legend>
+    UID: <select name="CardSerial" style="width:200px"></select>
+    <INPUT TYPE="button" NAME="Inventory" VALUE="Inventory" ONCLICK=OnInventory()>
+  
+    <p></p>    
+    
+    
+    <p></p>
+	
+	<fieldset style="font: 9pt 宋体; width: 550px;"><legend>Antenna</legend>
+        
+          <p></p>
+          <INPUT TYPE="checkbox" NAME="ANT1"  checked="true">Ant#1</input>
+		  <INPUT TYPE="checkbox" NAME="ANT2"  checked="true">Ant#2</input>
+		  <INPUT TYPE="checkbox" NAME="ANT3"  checked="true">Ant#3</input>
+		  <INPUT TYPE="checkbox" NAME="ANT4"  checked="true">Ant#4</input>
+          <p></p>
+         
+          
+	</fieldset>  
+	
+	
+	<fieldset style="font: 9pt 宋体; width: 550px;"><legend>Search</legend>
+        
+          <p></p>
+         <INPUT TYPE="button" NAME="Search" VALUE="Search" ONCLICK=OnSearch()>
+          <p></p>
+         
+          
+	</fieldset>  
+	
+	
+    <fieldset style="font: 9pt 宋体; width: 550px;"><legend>Tag Initialization</legend>
+        
+          <p></p>
+          Password(Hex): <INPUT TYPE ="text" NAME="KeyData" VALUE="0000000000000000" size=50 style="width: 276px; height: 20px"/>
+
+          <p></p>
+          <INPUT TYPE="button" NAME="Initialization" VALUE="Initialization" ONCLICK=OnInitialization()>
+          
+	</fieldset>     
+    <p></p>
+		
+    
+    
+</fieldset>
+
+
+
+
+</center>
+
+
+
+</body>
+
+</html>

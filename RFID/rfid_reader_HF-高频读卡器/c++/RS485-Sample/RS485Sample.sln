@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RS485Sample", "RS485Sample.vcxproj", "{81A1F067-1153-41BA-BD3B-621E478DE7EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		debug_unicode|x64 = debug_unicode|x64
+		debug_unicode|x86 = debug_unicode|x86
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81A1F067-1153-41BA-BD3B-621E478DE7EE}.debug_unicode|x64.ActiveCfg = debug_unicode|x64
+		{81A1F067-1153-41BA-BD3B-621E478DE7EE}.debug_unicode|x64.Build.0 = debug_unicode|x64
+		{81A1F067-1153-41BA-BD3B-621E478DE7EE}.debug_unicode|x86.ActiveCfg = debug_unicode|Win32
+		{81A1F067-1153-41BA-BD3B-621E478DE7EE}.debug_unicode|x86.Build.0 = debug_unicode|Win32
+		{81A1F067-1153-41BA-BD3B-621E478DE7EE}.Debug|x64.ActiveCfg = Debug|x64
+		{81A1F067-1153-41BA-BD3B-621E478DE7EE}.Debug|x64.Build.0 = Debug|x64
+		{81A1F067-1153-41BA-BD3B-621E478DE7EE}.Debug|x86.ActiveCfg = Debug|Win32
+		{81A1F067-1153-41BA-BD3B-621E478DE7EE}.Debug|x86.Build.0 = Debug|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

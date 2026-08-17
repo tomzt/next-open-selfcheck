@@ -133,30 +133,70 @@ next-open-selfcheck/
 
 ---
 
-### 3. Bookdrop (Automated Return) — Backend Daemon
+### 3. Bookdrop (Automated Return) — Backend-Centric with Tablet UI
+
+**Architecture:** Tablet displays confirmation UI. Backend daemon reads Feig RD5200 reader.
 
 ```
-[Central Server: Bookdrop Daemon (Node.js)]
-  ├─ Hardware: Feig Reader Module (LRM5400 or M02-M8)
-  │    ├─ Interface: USB or RS232 to server
-  │    ├─ Read range: 50 cm (long-range)
-  │    └─ Location: Inside metal chute with ferrite-backed dual antennas
-  │
-  ├─ Workflow:
-  │    1. Book drops into chute (RFID tag detected)
-  │    2. Daemon reads tag UID
-  │    3. Daemon POST /api/sip2/checkin (auto-trigger)
-  │    4. Backend sends to ILS via SIP2
-  │    5. Item checked in, inventory updated
-  │    6. Log transaction (audit trail)
-  │
-  ├─ Multiplexing: Supports multiple Feig readers
-  │    (multiple bookdrops connected to same server via USB hub + multiplexer)
-  │
-  └─ No UI (headless service)
+[Physical Bookdrop Station]
+├─ Feig RD5200 Reader (long-range, stationary)
+│  └─ Connected via serial/RS485/Ethernet (NOT WiFi)
+│     to central server
+│
+├─ Nearby Tablet (Flutter app)
+│  ├─ Org WiFi (Eduroam/WPA2-Enterprise/etc.)
+│  ├─ No direct RD5200 connection needed
+│  └─ Polls: GET /api/bookdrop/events every 100ms
+│
+└─ User Experience:
+   1. Patron drops book → RD5200 detects tag
+   2. Tablet shows: "⏳ Processing..." (listening state)
+   3. Backend daemon notifies tablet of tag detection
+   4. Tablet shows: "✓ Book returned successfully" (green)
+      + Beep sound + green LED
+   5. Resume listening (return to welcome after 3 sec)
 ```
 
-**Deployment:** Docker container on central server. Feig reader modules connected via USB hub on the server (not on each bookdrop).
+**Backend Workflow:**
+```
+[Central Server]
+├─ bookdrop-rfid-daemon.ts
+│  ├─ Reads Feig RD5200 via serial/RS485
+│  ├─ Detects ISO15693 tags
+│  ├─ Extracts barcode from tag memory
+│  └─ Caches events for polling clients
+│
+├─ GET /api/bookdrop/events
+│  └─ Tablet polls every 100ms
+│     Returns: { events: [ { barcode, timestamp } ] }
+│
+└─ POST /api/bookdrop/checkin
+   ├─ Receives: { itemBarcode, deviceId }
+   ├─ Calls: SIP2 message 09 (checkin)
+   ├─ Returns: { success, title, message }
+   └─ Tablet displays result
+```
+
+**Why Backend-Centric?**
+
+✅ **Authentication:** No RD5200 WiFi auth config needed per site
+- Tablet authenticates to backend (institutional SSO if needed)
+- Backend handles RD5200 locally (no WiFi)
+- Works with: Eduroam, WPA2-Enterprise, captive portal, open WiFi
+
+✅ **Scalability:** Multiple tablets can poll same backend
+- All bookdrops in library share one RD5200 daemon
+- Event caching in backend (Redis or in-memory)
+- Low bandwidth (100ms polling, small JSON responses)
+
+✅ **Offline Resilience:** Events cached on backend
+- If tablet WiFi drops, backend holds events for 5 seconds
+- Tablet reconnects and retrieves missed detections
+
+**Deployment:** Docker container on central server.
+- Feig RD5200 reader connected via serial/RS485 (wired, NOT WiFi)
+- Tablet connects via org WiFi (any method, handled by institution)
+- No per-site configuration complexity
 
 ---
 

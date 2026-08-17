@@ -36,11 +36,13 @@ Built for **any library worldwide** — RMUTI (Rajamangala University of Technol
 
 | App | Description | Status |
 |---|---|---|
-| [`apps/kiosk`](./apps/kiosk) | Patron self-check — borrow, return, loans, fines (web prototype done; Flutter rewrite in Phase 4) | ✅ Phase 3b done |
-| [`apps/bookdrop`](./apps/bookdrop) | Automated return station — RFID-only (Feig reader + backend daemon) | 📋 Planned (Phase 5) |
-| [`apps/workstation`](./apps/workstation) | Staff RFID workstation — patron search, manual checkin/checkout (Flutter app) | 📋 Planned (Phase 6) |
+| [`apps/kiosk`](./apps/kiosk) | **Centralized backend** — API endpoints, SIP2 client, Bookdrop daemon | ✅ Phase 3b done |
+| [`apps/kiosk-mobile`](./apps/kiosk-mobile) | **Flutter native apps** — Kiosk (patron self-check), Workstation (staff), Bookdrop (return UI) | 📋 Phase 4–6 |
+| — Kiosk (Phase 4) | Patron self-check tablet — borrow/return/loans/fines with RFID (ACR1552U) | 🚀 Next |
+| — Workstation (Phase 5) | Staff operations tablet/PC — patron search, manual checkin/checkout | 📋 Planned |
+| — Bookdrop UI (Phase 4 prep) | Tablet confirm screen for return station (backend-centric, RD5200 reader) | ✅ Designed |
 
-All apps are **independent** — deploy Kiosk alone without Bookdrop or Workstation.
+**Architecture:** Single centralized backend (Docker on university server) + multiple Flutter native clients (tablets at each location).
 
 ---
 
@@ -197,24 +199,39 @@ The library name (`KIOSK_LIBRARY_NAME`) appears in the page `<title>` and the he
 
 ---
 
-## Architecture
+## Architecture: Centralized Backend + Flutter Clients
 
 ```
-Patron Kiosk (touch screen, full-screen browser)
-  └─ apps/kiosk  (Next.js 15 + PostgreSQL, Docker)
-        ├─ NextAuth.js ──► SIP2 (barcode) or OIDC provider
-        ├─ SIP2 Client ──LAN──► ILS (Koha / ALMA / WALAI / any SIP2 v2.0)
-        └─ rfid-adapter ──USB──► ISO 15693 Reader (optional, Phase 4)
-
-Bookdrop Station (drop slot, no screen)
-  └─ apps/bookdrop  (Node.js service, planned Phase 5)
-        ├─ rfid-adapter ──USB──► RFID sensor (detect tag as book slides through)
-        └─ SIP2 Client ──LAN──► ILS (auto-checkin)
-
-Staff Workstation (library PC, Chrome)
-  └─ apps/workstation  (Next.js, LAN-hosted, planned Phase 6)
-        └─ rfid-adapter ──USB──► ISO 15693 Reader (tag programming)
+┌──────────────────────────────────────────────┐
+│      Central Server (Docker)                 │
+│      (University datacenter)                 │
+│                                              │
+│  • Next.js API (/api/sip2/*, /api/auth/*)  │
+│  • Bookdrop RFID Daemon (RD5200 reader)    │
+│  • PostgreSQL (transaction logs)            │
+│  • Nginx reverse proxy                      │
+└──────────────────┬───────────────────────────┘
+                   │ (HTTPS/LAN)
+         ┌─────────┼─────────┐
+         │         │         │
+    ┌────▼────┐ ┌─▼──────┐ ┌─▼──────┐
+    │ Kiosk   │ │ Work-  │ │Bookdrop│
+    │ Tablet  │ │station │ │Tablet  │
+    │ Flutter │ │Tablet/ │ │UI      │
+    │         │ │  PC    │ │        │
+    │ Phase 4 │ │Phase 5 │ │Phase 4 │
+    └────┬────┘ └──┬─────┘ └────┬───┘
+         │        (Org WiFi)    │
+         │                      │
+    ┌────▼──┐              ┌────▼──┐
+    │ACR1552│              │RD5200 │
+    │Reader │              │Reader │
+    │ (USB) │              │(Serial│
+    └───────┘              │ /RS485)
+                           └───────┘
 ```
+
+**Deployment:** Single centralized backend on university server (Docker). Multiple Flutter native clients (tablets/PCs) at each library location connect via org WiFi.
 
 ### Monorepo
 
@@ -318,16 +335,18 @@ npm run dev --workspace=apps/kiosk
 
 ## Phase Roadmap
 
+**Architecture: Centralized backend (Docker) + Flutter native clients**
+
 | Phase | Scope | Status |
 |---|---|---|
-| **1** | Scaffold, Welcome Screen, i18n (TH/EN), Docker, Mock SIP2 | ✅ Done |
-| **2** | Auth — SIP2 barcode, OIDC-generic, middleware guard | ✅ Done |
-| **3** | Main Menu, transaction screens, session timeout, 5-theme UI | ✅ Done |
-| **3b** | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle | ✅ Done |
-| **4** | RFID integration — rfid-adapter, ISO 15693, AFI write on borrow/return | 🔄 Next |
-| **5** | Bookdrop app — RFID-only auto-return, staff return log | 📋 Planned |
-| **6** | Workstation app — staff RFID tag programming | 📋 Planned |
-| **7** | First-Run Setup Wizard — web UI to generate `.env` on first boot | 📋 Planned |
+| **1–3b** | Web Kiosk (Next.js prototype) | ✅ Done |
+| **4** | 🚀 **Kiosk Flutter** — Patron self-check (borrow/return + RFID via ACR1552U) | 🔄 **NEXT** |
+| **4 prep** | Bookdrop + Tablet UI — Return station (backend-centric, RD5200 reader) | ✅ Designed |
+| **5** | Workstation Flutter — Staff operations (manual checkin/checkout, patron search) | 📋 Planned |
+| **6** | Bookdrop Daemon — Auto-return loop (RD5200 + SIP2 integration) | 📋 Planned |
+| **7** | First-Run Setup Wizard — Config UI on first boot | 📋 Planned |
+
+**Cost-Benefit:** 50–75% cheaper than Mini PC + touchscreen per location (centralized server + tablets)
 
 Full requirements and design decisions: [`docs/requirements.md`](./docs/requirements.md)
 

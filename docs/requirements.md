@@ -358,12 +358,21 @@ Patron name and card number are **never written to disk**. Only transaction meta
 | 2 | ✅ Done | Auth system (SIP2 barcode, OIDC, middleware guard) | Backend auth |
 | 3 | ✅ Done | Main Menu, transaction screens, session timeout | Web UI prototype |
 | 3b | ✅ Done | Batch scan flow, email receipt, `KIOSK_SERVICES` toggle | Web foundation complete |
-| 4 | 🔄 Next | **Flutter Kiosk app + RFID (USB Host via ACR1552U)** | Rewrite UI to native; token-based auth for Flutter clients |
-| 5 | 📋 Planned | **Bookdrop daemon (Feig SDK + auto-checkin)** | Node.js service on central server |
-| 6 | 📋 Planned | **Workstation Flutter app (staff tool)** | Patron search, manual checkin/checkout, logs |
+| 4 prep | ✅ Designed | **Bookdrop + Tablet UI** (backend-centric) | Patron confirm screen, RD5200 reader daemon, polling endpoint |
+| 4 | 🚀 **NEXT** | **Flutter Kiosk app + RFID (USB Host via ACR1552U)** | Patron self-check (borrow/return), batch-scan flow, RFID integration |
+| 5 | 📋 Planned | **Workstation Flutter app (staff tool)** | Patron search, manual checkin/checkout, logs |
+| 6 | 📋 Planned | **Bookdrop Daemon (Feig RD5200 + SIP2 auto-checkin)** | Backend RFID loop, event caching |
 | 7 | 📋 Planned | First-Run Setup Wizard | Config wizard (post-Phase 6) |
 
-**Key change:** Phases 4–6 are **Flutter native apps + centralized server**, not separate local Docker instances per location. Backend (Next.js API) serves all clients simultaneously.
+**Architecture (FINAL):** 
+- **Centralized server** (university datacenter): All services, SIP2 client, RFID daemons
+- **Flutter clients** (tablets at library locations): Kiosk (patron), Workstation (staff), Bookdrop UI (return confirm)
+- **Connection:** Org WiFi (handles all auth methods: Eduroam, WPA2-Enterprise, etc.)
+- **Cost benefit:** 50–75% hardware savings vs. Mini PC + touchscreen per location
+
+**Phase 4 deliverables:**
+- ✅ Bookdrop UI (backend-centric polling)
+- 🚀 Kiosk Flutter app (patron self-check with RFID)
 
 ---
 

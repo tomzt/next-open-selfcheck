@@ -1,0 +1,292 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(中华人民共和国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include ""res\\RD5200Sample.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""afxres.rc""     // 标准组件\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\RD5200Sample.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于 RD5200Sample"
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "RD5200Sample 1.0 版",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2020",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "确定",IDOK,178,7,50,16,WS_GROUP
+END
+
+IDD_RD5200SAMPLE_DIALOG DIALOGEX 0, 0, 588, 473
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "RD5200Sample"
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_COMBO1,53,45,56,125,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "COM:",IDC_STATIC,28,47,23,10
+    LTEXT           "Baud:",IDC_STATIC,28,67,26,13
+    LTEXT           "Frame:",IDC_STATIC,28,89,25,12
+    GROUPBOX        "Serial parameters",IDC_STATIC,19,35,118,72
+    GROUPBOX        "USB Parameters",IDC_STATIC,142,34,173,72
+    LTEXT           "USB open type:",IDC_STATIC,153,48,57,10
+    COMBOBOX        IDC_COMBO12,227,62,81,125,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO13,217,87,95,125,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Network",IDC_STATIC,340,51,223,51
+    LTEXT           "IP Addr:",IDC_STATIC,346,73,34,10
+    CONTROL         "",IDC_IPADDRESS1,"SysIPAddress32",WS_TABSTOP,380,71,90,15
+    LTEXT           "Port",IDC_STATIC,479,71,36,16
+    EDITTEXT        IDC_EDIT1,500,68,53,22,ES_AUTOHSCROLL
+    LTEXT           "Communication Type:",IDC_STATIC,21,15,84,13
+    COMBOBOX        IDC_COMBO14,111,16,74,125,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO2,53,66,56,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO3,53,88,56,78,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Open",IDC_BUTTON3,204,15,50,14
+    PUSHBUTTON      "Close",IDC_BUTTON4,260,15,50,14
+    LTEXT           "Usb open Type",IDC_STATIC,147,63,65,8
+    LTEXT           "Serial Num",IDC_STATIC,146,89,65,8
+    CONTROL         "",IDC_TAB1,"SysTabControl32",0x0,19,111,545,355
+END
+
+IDD_INVENTORY DIALOGEX 0, 0, 558, 299
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_LIST1,409,142,108,73,LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Ant",IDC_STATIC,409,130,13,8
+    CONTROL         "Enable Read Data",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,395,15,80,9
+    LTEXT           "Start byte",IDC_STATIC,395,33,41,8
+    LTEXT           "num of bytes",IDC_STATIC,395,48,49,8
+    EDITTEXT        IDC_EDIT2,448,31,67,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT3,449,48,67,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Start",IDC_BUTTON1,412,222,50,13
+    PUSHBUTTON      "Stop",IDC_BUTTON2,466,222,50,13
+    LTEXT           "Tag:0",IDC_STATIC_1,414,246,54,8
+    LTEXT           "Time:0",IDC_STATIC_2,414,260,54,8
+    CONTROL         "",IDC_LIST2,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,14,22,373,246
+    GROUPBOX        "Enable Write",IDC_STATIC,394,63,130,60
+    CONTROL         "EAS Disable",IDC_CK_EAS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,403,76,100,9
+    CONTROL         "Modify AFI ",IDC_CK_AFI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,403,89,60,9
+    LTEXT           "AFI:0x",IDC_STATIC,403,105,25,8
+    EDITTEXT        IDC_EDIT4,433,102,40,13,ES_AUTOHSCROLL
+END
+
+IDD_COMMAND DIALOGEX 0, 0, 521, 315
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CTEXT           "Tag",IDC_STATIC,28,6,59,8
+    GROUPBOX        "Read user block command",IDC_STATIC,125,20,130,68
+    CONTROL         "Enable",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,134,34,37,10
+    LTEXT           "StartBlock",IDC_STATIC,135,50,33,8
+    EDITTEXT        IDC_EDIT1,199,46,40,14,ES_AUTOHSCROLL
+    LTEXT           "Num of blocks",IDC_STATIC,135,66,50,8
+    EDITTEXT        IDC_EDIT5,199,66,40,14,ES_AUTOHSCROLL
+    GROUPBOX        "Write user block command",IDC_STATIC,126,97,130,88
+    CONTROL         "Enable",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,133,110,37,10
+    LTEXT           "StartBlock",IDC_STATIC,133,129,33,8
+    EDITTEXT        IDC_EDIT6,197,125,40,14,ES_AUTOHSCROLL
+    LTEXT           "Num of blocks",IDC_STATIC,133,145,50,8
+    EDITTEXT        IDC_EDIT7,197,145,40,14,ES_AUTOHSCROLL
+    LTEXT           "Data of blocks:0x",IDC_STATIC,131,168,57,8
+    EDITTEXT        IDC_EDIT2,188,164,55,14,ES_AUTOHSCROLL
+    GROUPBOX        "Write AFI command",IDC_STATIC,127,189,128,48
+    CONTROL         "Enable",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,135,201,37,10
+    LTEXT           "AFI:0x",IDC_STATIC,135,218,23,8
+    GROUPBOX        "EAS Enable/EAS Disable",IDC_STATIC,129,248,126,42
+    CONTROL         "Enable",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,135,260,37,10
+    COMBOBOX        IDC_COMBO3,135,273,66,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Execute",IDC_BUTTON1,285,23,71,27
+    LTEXT           "Time cosuming:0ms",IDC_STATIC_TIME,286,59,62,8
+    LTEXT           "Command Result",IDC_STATIC,287,77,68,8
+    CONTROL         "",IDC_RICHEDIT21,"RichEdit20A",ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN | WS_BORDER | WS_VSCROLL | WS_TABSTOP,286,94,224,194
+    LISTBOX         IDC_LIST1,3,20,115,268,LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_AFIVAL,186,216,54,14,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080403a8"
+        BEGIN
+            VALUE "CompanyName", "TODO: <公司名>"
+            VALUE "FileDescription", "TODO: <文件说明>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "RD5200Sample.exe"
+            VALUE "LegalCopyright", "TODO: (C) <公司名>。保留所有权利。"
+            VALUE "OriginalFilename", "RD5200Sample.exe"
+            VALUE "ProductName", "TODO: <产品名>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 936
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_RD5200SAMPLE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 581
+        TOPMARGIN, 7
+    END
+
+    IDD_INVENTORY, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 292
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_COMMAND DLGINIT
+BEGIN
+    IDC_COMBO3, 0x403, 8, 0
+0x6944, 0x6173, 0x6c62, 0x0065, 
+    IDC_COMBO3, 0x403, 7, 0
+0x6e45, 0x6261, 0x656c, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUTBOX            "关于 RD5200Sample(&A)..."
+END
+
+#endif    // 中文(中华人民共和国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#pragma code_page(936)
+#include "res\RD5200Sample.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "afxres.rc"     // 标准组件
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
