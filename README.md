@@ -201,6 +201,8 @@ The library name (`KIOSK_LIBRARY_NAME`) appears in the page `<title>` and the he
 
 ## Architecture: Centralized Backend + Flutter Clients
 
+**Primary Deployment (Plan 2 — Tablet + Flutter):**
+
 ```
 ┌──────────────────────────────────────────────┐
 │      Central Server (Docker)                 │
@@ -232,6 +234,8 @@ The library name (`KIOSK_LIBRARY_NAME`) appears in the page `<title>` and the he
 ```
 
 **Deployment:** Single centralized backend on university server (Docker). Multiple Flutter native clients (tablets/PCs) at each library location connect via org WiFi.
+
+**Cost-Benefit:** 50–75% cheaper than Mini PC + touchscreen (centralized model). See [`docs/requirements.md §15`](./docs/requirements.md#15-deployment-options) for alternative deployment strategies (Plan 3: ESP32 Bookdrop, future option).
 
 ### Monorepo
 

@@ -348,7 +348,56 @@ Patron name and card number are **never written to disk**. Only transaction meta
 
 ---
 
-## 15. Phase Roadmap
+## 15. Deployment Options
+
+Three deployment strategies, evaluated for cost vs. dev complexity:
+
+### **Plan 2 (Current) — Tablet + Flutter + Centralized Server** ✅ ACTIVE
+
+```
+Deployment:
+  Central Server (Docker): 1 per university
+  ├─ Next.js API
+  ├─ Bookdrop RFID Daemon (RD5200 reader, wired serial/RS485)
+  ├─ PostgreSQL + Nginx
+  └─ Serves 3 apps over HTTPS/LAN
+
+  Library Sites (Org WiFi):
+  ├─ Kiosk Tablet (Flutter) — patron self-check + RFID (ACR1552U, USB)
+  ├─ Workstation Tablet/PC (Flutter) — staff + optional RFID
+  └─ Bookdrop Tablet (Flutter) — UI confirm, polls backend events
+```
+
+**Cost:** $250–500/unit (hardware amortized), one-time dev  
+**Timeline:** Phase 4–6 (~8–12w)  
+**Why:** Scales horizontally (add tablet = no backend change), solves WiFi auth complexity (backend-centric), 50–75% cheaper than Mini PC per location
+
+---
+
+### **Plan 3 (Future Option) — ESP32 Bookdrop Only** 📋 PHASE 6+
+
+*Cost optimization for bookdrop stations only. No code changes to backend; clients can choose which option.*
+
+```
+Deployment (Bookdrop):
+  ESP32 + TFT 2.8" Touchscreen
+  ├─ Firmware (C/C++ or MicroPython + LVGL)
+  ├─ WiFi → polls central backend
+  │   GET /api/bookdrop/events (100ms polling)
+  │   POST /api/bookdrop/checkin
+  └─ RD5200 reader (wired serial/RS485 to backend or direct to ESP32)
+
+  Central Server: unchanged (same backend API)
+```
+
+**Cost:** $35–120/unit (hardware), +2–3w dev (Phase 6+)  
+**When:** After Phase 5 (once backend proven stable)  
+**Why:** Additional $80–365 savings per bookdrop (small UI, no mobile apps needed)  
+**Tradeoff:** Requires embedded C/FreeRTOS expertise; basic UI only (no animations)
+
+---
+
+## 16. Phase Roadmap
 
 **Architecture: Centralized server + Flutter native clients** (decided 2026-07-25)
 
@@ -376,7 +425,7 @@ Patron name and card number are **never written to disk**. Only transaction meta
 
 ---
 
-## 16. Security Hardening
+## 17. Security Hardening
 
 Confirmed via an OWASP Top 10 pass and independently verified against
 a running instance (mock SIP2 + a real `docker build`/`docker run`
