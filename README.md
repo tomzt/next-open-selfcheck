@@ -256,17 +256,31 @@ next-open-selfcheck/
 
 ---
 
-## SIP2 Messages Used
+## SIP2 Protocol (3M Standard Interchange Protocol V2.00)
 
-| Operation | Message | Response |
-|---|---|---|
-| Login | 93 → 94 | ok flag at char[2] |
-| Patron auth | 63 (Patron Information) | 64 — BL=valid patron |
-| Borrow | 11 (Checkout Request) | 12 — ok at [2] |
-| Return | 09 (Checkin Request) | 10 — ok at [2], alert at [5] |
-| My Loans | 63 + summary `  Y       ` | 64 — AU fields (charged items) |
-| My Fines | 63 + summary `   Y      ` | 64 — BV field (total amount) |
-| Patron email | 63 | 64 — BE field (for email receipt) |
+### Messages Used
+
+| Operation | Message | Response | Used By |
+|---|---|---|---|
+| **Login** | 93 (Login) | 94 (Login Response) | Backend auth, Bookdrop daemon startup |
+| **Patron auth** | 63 (Patron Information) | 64 (Patron Info Response) | Kiosk, Workstation, Bookdrop (optional) |
+| **Borrow** | 11 (Checkout Request) | 12 (Checkout Response) | Kiosk, Workstation |
+| **Return** | 09 (Checkin Request) | 10 (Checkin Response) | Kiosk, Workstation, **Bookdrop daemon** |
+| **My Loans** | 63 + summary flag | 64 — AU fields (items) | Kiosk, Workstation |
+| **My Fines** | 63 + summary flag | 64 — BV field (amount) | Kiosk, Workstation |
+| **Patron email** | 63 | 64 — BE field | Email receipt (Phase 3b) |
+
+### Bookdrop Daemon (Phase 6)
+- Connects to backend via **Socket (TCP/IP)**
+- Sends Msg 93 (login) on startup
+- Detects RFID tag → sends Msg 09 (checkin) with barcode
+- Receives Msg 10 (response) → caches for UI polling
+- See `docs/requirements.md §16` for protocol details
+
+### Full Protocol Reference
+- **Document:** 3M SelfCheck™ system SIP2 Interface Developer's Guide (V2.00, June 1999)
+- **Location:** `/RFID/SIP2_Interface_Developers_guide.pdf` (33 pages)
+- **Memory notes:** `memory/sip2-interface-guide-study.md` (implementation summary)
 
 ---
 

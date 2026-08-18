@@ -425,6 +425,74 @@ Deployment (Bookdrop):
 
 ---
 
+## 16. SIP2 Protocol Reference (Phase 6 Bookdrop Daemon)
+
+Bookdrop daemon acts as SIP2 client for auto-checkin. Uses 3M Standard Interchange Protocol V2.00.
+
+### **Connection:** Socket (TCP/IP) to backend SIP2 server
+
+| Step | Message | Direction | Payload |
+|------|---------|-----------|---------|
+| **Startup** | Msg 93 (Login) | Daemon → Backend | username, password, location |
+| — | Msg 94 (Login Response) | Backend → Daemon | OK flag (1 = success, 0 = fail) |
+| **Per Tag** | Msg 09 (Checkin Request) | Daemon → Backend | Item barcode, cancel flag |
+| — | Msg 10 (Checkin Response) | Backend → Daemon | OK (1=success, 0=fail), Resensitize (Y/N), Title, Due Date |
+
+### **Message Format**
+- Pipe-delimited fields (`|`)
+- Ends with CR (carriage return, ASCII 13)
+- Max message: 8192 chars
+- Optional: Checksum (4-digit hex XOR for error detection)
+
+**Example Checkin Flow:**
+```
+Daemon sends:   09N|123456789|<CR>
+Backend sends:  10Y1|Book Title Here|20240620<CR>
+Interpretation: OK=1 (success), Resensitize=Y (write AFI), Title, Due Date
+```
+
+### **Critical Fields**
+
+**Msg 09 (Checkin Request):**
+- `09` = message ID (fixed)
+- `N` = cancel flag (N = normal checkin, Y = cancel prior checkout)
+- Barcode = item identifier (from RFID tag)
+
+**Msg 10 (Checkin Response):**
+- `10` = message ID (fixed)
+- `Y/N` = Resensitize flag (Y = rewrite AFI 0x07 to tag after checkin)
+- `0/1` = OK flag (1 = checkin successful, 0 = refused)
+- Title = book title (for UI display)
+- Due Date = return date (for logging)
+
+### **Error Scenarios (Handled by Backend)**
+- Item does not exist → Msg 10 with OK=0
+- Item already checked in → Msg 10 with OK=0
+- Patron has blocks → Msg 10 with OK=0 + alert field
+- Multiple items detected in chute → Daemon rejects (single-item checkin only)
+
+### **Resensitize Handling**
+- If `Resensitize=Y` in Msg 10: Item needs AFI rewrite to 0x07 (in-library)
+- Daemon MAY skip this (not all bookdrop items are RFID-tagged)
+- Tablet UI should indicate to patron: "Please remove item and drop again"
+
+### **Backend Implementation (Phase 6)**
+The existing `apps/kiosk/src/lib/sip2-client.ts` already handles Msg 09 & 10 (checkin logic).
+
+For Bookdrop daemon, backend needs:
+1. Add Socket listener (e.g., port 6002, same as mock SIP2 server)
+2. Handle incoming Msg 93 (login from daemon)
+3. Forward Msg 09 from daemon → existing `sip2Client.checkin(barcode)`
+4. Parse Msg 10 response from ILS
+5. Send Msg 10 back to daemon
+6. Daemon caches response for tablet polling (`GET /api/bookdrop/events`)
+
+### **References**
+- 3M SelfCheck™ system SIP2 Interface Developer's Guide (V2.00, June 1999)
+- Available: `/RFID/SIP2_Interface_Developers_guide.pdf` (33 pages, study notes in memory: `sip2-interface-guide-study.md`)
+
+---
+
 ## 17. Security Hardening
 
 Confirmed via an OWASP Top 10 pass and independently verified against
