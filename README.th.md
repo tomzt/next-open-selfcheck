@@ -235,17 +235,31 @@ next-open-selfcheck/
 
 ---
 
-## SIP2 Messages ที่ใช้
+## โปรโตคอล SIP2 (3M Standard Interchange Protocol V2.00)
 
-| การทำงาน | Message | Response |
-|---|---|---|
-| Login | 93 → 94 | ok flag ที่ char[2] |
-| ยืนยันตัวตนผู้ใช้ | 63 (Patron Information) | 64 — BL=valid patron |
-| ยืม | 11 (Checkout Request) | 12 — ok ที่ [2] |
-| คืน | 09 (Checkin Request) | 10 — ok ที่ [2], alert ที่ [5] |
-| ตรวจสอบรายการยืม | 63 + summary `  Y       ` | 64 — AU fields (charged items) |
-| ค้นหาค่าปรับ | 63 + summary `   Y      ` | 64 — BV field (ยอดรวม) |
-| Email ผู้ใช้ | 63 | 64 — BE field (สำหรับส่ง email ใบเสร็จ) |
+### Messages ที่ใช้
+
+| การทำงาน | Message | Response | ใช้โดย |
+|---|---|---|---|
+| **Login** | 93 (Login) | 94 (Login Response) | Backend auth, Bookdrop daemon startup |
+| **ยืนยันตัวตนผู้ใช้** | 63 (Patron Information) | 64 (Patron Info Response) | Kiosk, Workstation, Bookdrop (optional) |
+| **ยืม** | 11 (Checkout Request) | 12 (Checkout Response) | Kiosk, Workstation |
+| **คืน** | 09 (Checkin Request) | 10 (Checkin Response) | Kiosk, Workstation, **Bookdrop daemon** |
+| **ตรวจสอบรายการยืม** | 63 + summary flag | 64 — AU fields (items) | Kiosk, Workstation |
+| **ค้นหาค่าปรับ** | 63 + summary flag | 64 — BV field (ยอดรวม) | Kiosk, Workstation |
+| **Email ผู้ใช้** | 63 | 64 — BE field | Email ใบเสร็จ (Phase 3b) |
+
+### Bookdrop Daemon (Phase 6)
+- เชื่อมต่อ backend ผ่าน **Socket (TCP/IP)**
+- ส่ง Msg 93 (login) ตอนเริ่มต้น
+- ตรวจจับแท็ก RFID → ส่ง Msg 09 (checkin) พร้อมเลขบัตรหนังสือ
+- รับ Msg 10 (response) → เก็บไว้สำหรับ UI polling
+- ดูรายละเอียดที่ `docs/requirements.md §16`
+
+### อ้างอิงโปรโตคอลครบ
+- **เอกสาร:** 3M SelfCheck™ system SIP2 Interface Developer's Guide (V2.00, June 1999)
+- **ไฟล์:** `/RFID/SIP2_Interface_Developers_guide.pdf` (33 หน้า)
+- **บันทึกพร้อมใช้:** `memory/sip2-interface-guide-study.md` (สรุปเตรียมใช้)
 
 ---
 
