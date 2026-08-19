@@ -185,7 +185,13 @@ RFID_DRIVER=webserial
 
 ### Branding
 
-ตู้ kiosk **ไม่มีโลโก้หรือชื่อห้องสมุดใดติดมาเลย** — ทุกการ deploy ต้องใส่ของตัวเอง มี 3 วิธีตั้งค่าโลโก้และวิดีโอต้อนรับ (เรียงตามลำดับความสำคัญ):
+ตู้ kiosk **ประหยัด 50–75%** เทียบกับ Mini PC + touchscreen (รูปแบบกลางศูนย์) ดูรูปแบบ deployment อื่นได้ที่ [`docs/requirements.md §15`](./docs/requirements.md#15-deployment-options) (Plan 3: ESP32 Bookdrop ในอนาคต)
+
+---
+
+## Branding
+
+**ไม่มีโลโก้หรือชื่อห้องสมุดใดติดมาเลย** — ทุกการ deploy ต้องใส่ของตัวเอง มี 3 วิธีตั้งค่าโลโก้และวิดีโอต้อนรับ (เรียงตามลำดับความสำคัญ):
 
 1. **URL** — ตั้ง `KIOSK_LOGO_URL` / `KIOSK_WELCOME_VIDEO_URL` เป็น URL แบบ `https://…` หรือพาธ `/path` (เสิร์ฟผ่าน redirect)
 2. **ไฟล์ในแพ็กเกจ** — วางไฟล์ใน `apps/kiosk/public/branding/`:
