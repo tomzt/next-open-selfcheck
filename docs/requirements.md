@@ -493,7 +493,73 @@ For Bookdrop daemon, backend needs:
 
 ---
 
-## 17. Security Hardening
+## 17. RFID Hardware Reference (Phase 4–6)
+
+### Hardware Selection Summary
+
+| Reader | Model | Connection | Range | Phase | Deployment |
+|--------|-------|-----------|-------|-------|---|
+| **Kiosk/Workstation** | ACS ACR1255U-J1 | USB + Bluetooth | 50mm | 4–5 | Tablet/PC (patron/staff facing) |
+| **Bookdrop** | Feig RD5200 | Serial/RS485/TCP | 50cm | 6 | Central server (stationary chute) |
+
+### Phase 4–5: ACR1255U-J1 (Patron/Staff RFID)
+
+**Device**: ACS Secure Bluetooth® NFC Reader (ACR1255U-J1, V1.12)
+
+**Why this device:**
+- 50mm operating distance (patron can hold tag close)
+- USB (wired) + Bluetooth (wireless) flexibility
+- Built-in LEDs (bi-color) + buzzer for user feedback
+- Android 4.3+ support (native library)
+- iOS 8.0+ support (native library)
+- ISO 14443 Type A/B, MIFARE, FeliCa, NFC compliant
+- AES-128 encryption (CBC mode)
+- Compact (85×54×10mm, 37.5g)
+- Rechargeable Lithium-ion battery
+
+**Integration (Flutter):**
+1. **Platform Channel** (Kotlin/Swift native code) — USB Host API access
+2. **Dart wrapper** — `RfidReader.readTag()`, `RfidReader.writeAFI(afi)`
+3. **UI feedback** — LED status (reading→success) + audio beep
+
+**Use Cases:**
+- **Kiosk (Phase 4)**: Patron holds tag to reader → checkout/checkin
+- **Workstation (Phase 5)**: Staff programs tags → batch tag preparation
+
+**Verification:**
+- ✅ USB-OTG support on Android tablets
+- ✅ Bluetooth pairing on Android/iOS
+- ✅ PC/SC + CCID standard compliance
+- ✅ Tag read/write speed: up to 424 Kbps
+
+### Phase 6: Feig RD5200 (Bookdrop Daemon)
+
+**Device**: Feig RD5200 RFID Reader (50cm long-range)
+
+**Why this device:**
+- Long-range (50cm) for automated chute detection
+- Stationary (wired serial/RS485/TCP to backend)
+- Backend daemon reads ISO15693 tags automatically
+- No patron/staff interaction needed (fully automated)
+- Integrated into central server deployment
+
+**Integration (Node.js):**
+- Backend daemon (Bookdrop Service) reads RD5200 via serial/RS485
+- Extracts barcode from tag
+- Auto-sends SIP2 Msg 09 (checkin) to ILS
+- Tablet polls backend for confirmation
+
+**See also**: `docs/architecture.md` (Bookdrop Backend-Centric), `docs/requirements.md §16` (SIP2 Protocol)
+
+### Full RFID Hardware Reference
+
+- **ACR1255U-J1 Study**: `memory/acr1255u-reader-study.md` (technical specs, Android/iOS integration)
+- **SIP2 Protocol**: `memory/sip2-interface-guide-study.md` (backend integration, Phase 6)
+- **RFID Adapter**: `packages/rfid-adapter/` (ISO 15693 hardware abstraction layer, shared)
+
+---
+
+## 18. Security Hardening
 
 Confirmed via an OWASP Top 10 pass and independently verified against
 a running instance (mock SIP2 + a real `docker build`/`docker run`
